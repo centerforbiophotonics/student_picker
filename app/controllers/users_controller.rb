@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
 	#@user = User.joins(:courses).find(params[:id])
-	@user.courses.build
+	#@user.courses.build
   end
 
   # GET /users/new

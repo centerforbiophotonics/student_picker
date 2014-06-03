@@ -15,6 +15,16 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
+  
+  <% f.fields_for :questions do |builder| %>
+  <p>
+	<%= builder.label :content, "Course" %><br/>
+	<%= builder.text_area :content %>
+	<%= builder.check_box :_destroy %>
+	<%= builder.label :_destroy, "Remove Course" %>
+  </p>
+  <% end %>
+  
   <div class="actions">
     <%= f.submit %>
   </div>

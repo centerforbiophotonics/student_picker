@@ -2,5 +2,16 @@
 
 <%= render 'form' %>
 
+<h4>Add a course:</h4>
+<%= form_for([@user, @user.courses.build]) do |f| %>
+	<p>
+		<%= f.label :name %><br>
+		<%= f.text_field :name %>
+	</p>
+	<p>
+		<%= f.submit %>
+	</p>
+<% end %>
+
 <%= link_to 'Show', @user %> |
 <%= link_to 'Back', users_path %>
