@@ -7,10 +7,27 @@ class CoursesController < ApplicationController
 	end
 	
 	def destroy
+	puts params.inspect
+	@course = Course.find params[:id]
     @course.destroy
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'Course was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+  
+  def edit
+	@course = Course.find params[:id]
+  end
+  
+  def update
+	@course = Course.find params[:id]
+    @course.update(course_params)
+    #render :nothing => true
+    #redirect_to users_url, notice: 'Course was successfully updated.'
+    respond_to do |format|
+      format.html { redirect_to users_url, notice: 'Course was successfully destroyed.' }
+      #format.json { head :no_content }
     end
   end
 	
@@ -18,4 +35,4 @@ class CoursesController < ApplicationController
 		def course_params
 			params.require(:course).permit(:name)
 		end
-end
+	end

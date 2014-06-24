@@ -2,11 +2,20 @@
 
 <%= render 'form' %>
 
+<% @user.courses.each do |c| %>
+	<li>
+		<%= link_to "Edit #{c.name}", edit_user_course_path(c.user_id, c.id)  %>
+		<td><%= link_to 'Destroy', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	</li>
+<% end %>
+ 
 <h4>Add a course:</h4>
 <%= form_for([@user, @user.courses.build]) do |f| %>
 	<p>
 		<%= f.label :name %><br>
-		<%= f.text_field :name %>
+		<%= f.text_field :name %><br>
+		<%= f.label :student_list %><br>
+		<%= f.text_field :student_list %><br>
 	</p>
 	<p>
 		<%= f.submit %>

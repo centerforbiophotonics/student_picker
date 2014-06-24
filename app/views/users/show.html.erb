@@ -4,15 +4,15 @@
   <strong>Name:</strong>
   <%= @user.name %>
 </p>
-
-<h4>Courses</h4>
-<% @user.courses.each do |course| %>
-	<p>
-		<strong>Course:</strong>
-		<%= course.name %>
-		<%= link_to 'Destroy', @course, method: :delete, data: { confirm: 'Are you sure?' } %>
-	</p>
-<% end %>
-
+<p>
+<strong>Courses:</strong><br>
+	<% @user.courses.each do |course| %>
+		<%= course.name %><br>
+		<body>Students:
+			<%= course.student_list %><br>
+		</body>
+		<br>
+	<% end %>
+</p>
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>
