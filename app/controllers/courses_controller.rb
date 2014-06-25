@@ -6,12 +6,12 @@ class CoursesController < ApplicationController
 		redirect_to user_path(@user)
 	end
 	
-	def destroy
+  def destroy
 	puts params.inspect
 	@course = Course.find params[:id]
     @course.destroy
     respond_to do |format|
-      format.html { redirect_to users_url, notice: 'Course was successfully destroyed.' }
+      format.html { redirect_to @course.user}
       format.json { head :no_content }
     end
   end
@@ -26,13 +26,13 @@ class CoursesController < ApplicationController
     #render :nothing => true
     #redirect_to users_url, notice: 'Course was successfully updated.'
     respond_to do |format|
-      format.html { redirect_to users_url, notice: 'Course was successfully destroyed.' }
+      format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
       #format.json { head :no_content }
     end
   end
 	
 	private
 		def course_params
-			params.require(:course).permit(:name)
+			params.require(:course).permit(:name, :student_list)
 		end
 	end

@@ -7,7 +7,9 @@
 <p>
 <strong>Courses:</strong><br>
 	<% @user.courses.each do |course| %>
-		<%= course.name %><br>
+		<%= course.name %>
+		<%= link_to 'Edit', edit_user_course_path(course.user_id, course.id)%>
+		<%= link_to 'Show', course%><br>
 		<body>Students:
 			<%= course.student_list %><br>
 		</body>
