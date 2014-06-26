@@ -1,0 +1,57 @@
+<p><strong>Course:</strong>
+	<%= @course.name %>
+</p>
+<a href="#" id = "random_student_selector">Select Student at Random</a>
+<p id = "selected_student"></p>
+
+<div id= "buttons" style="display:none;">
+	<button type="button" id="answer" style="color:blue">Question Answered</button>
+	<button type="button" id="absent" style="color:red">Student Absent</button>
+	<button type="button" id="pass" stye="color:black">Student Passed</button>
+</div>
+
+<a href="#" id = "toggle_student_list">Students(click to collapse):</a>
+	<div id= "student_list">
+		<ul>
+		<% JSON.parse(@course.student_list).keys().each do |student| %>
+			<li><%=student%></li>
+		<% end %>
+		</ul>
+
+	</div>
+<br>
+<%= link_to 'Edit', edit_course_path %> 
+<%= link_to 'Back', user_path(@course.user_id) %>
+
+<script type="text/javascript">
+	var student = null;
+	$("#toggle_student_list").click(function(e){
+		e.preventDefault();
+		$("#student_list").slideToggle();
+	})
+	$("#random_student_selector").click(function(e){
+		e.preventDefault();
+		var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
+		student = student_list[Math.floor(Math.random()*student_list.length)];
+		console.log(student);
+		$("#selected_student").text(student)
+		$("#buttons").show();
+	})
+	$("#answer").click(function(e){
+		console.log("test")
+		e.preventDefault();
+		$.ajax({
+  			type: "POST",
+  			url: "<%= answer_course_path(@course.id) %>",
+  			data: {student:student},
+  			success: function(){},
+  			dataType: "json"
+		});
+	})
+	$("#absent").click(function(e){
+		e.preventDefault();
+	})
+	$("#pass").click(function(e){
+		e.preventDefault();
+	})
+</script>

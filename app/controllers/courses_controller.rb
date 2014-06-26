@@ -3,9 +3,23 @@ class CoursesController < ApplicationController
 	def create
 		@user = User.find(params[:user_id])
 		@course = @user.courses.create(course_params)
+		student_list = {}
+		course_params[:student_list].split(", ").each do |student_name|
+			student_list[student_name]	= {
+				:answer => 0,
+				:absent => 0,
+				:pass => 0
+			}
+		end
+		@course.student_list = student_list.to_json()
+		@course.save!
 		redirect_to user_path(@user)
 	end
-	
+  
+  def show
+  		@course = Course.find params[:id]
+  end
+
   def destroy
 	puts params.inspect
 	@course = Course.find params[:id]
@@ -23,12 +37,29 @@ class CoursesController < ApplicationController
   def update
 	@course = Course.find params[:id]
     @course.update(course_params)
+
     #render :nothing => true
     #redirect_to users_url, notice: 'Course was successfully updated.'
     respond_to do |format|
       format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
       #format.json { head :no_content }
     end
+  end
+
+  def answer
+  	puts params.inspect
+  	course = Course.find params[:id]
+  	student_list = JSON.parse(course.student_list)
+  	student_list[params[:student]][answer] += 1
+  	course.student_list = student_list.to_json
+  	course.save!
+  	redirect_to course_path(params[:id])
+  end
+
+  def absent
+  end
+
+  def pass
   end
 	
 	private
