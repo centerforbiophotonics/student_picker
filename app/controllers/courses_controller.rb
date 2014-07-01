@@ -4,7 +4,7 @@ class CoursesController < ApplicationController
 		@user = User.find(params[:user_id])
 		@course = @user.courses.create(course_params)
 		student_list = {}
-		course_params[:student_list].split(", ").each do |student_name|
+		course_params[:student_list].split(/[,\t]+/).each do |student_name|
 			student_list[student_name]	= {
 				:answer => 0,
 				:absent => 0,
@@ -50,16 +50,42 @@ class CoursesController < ApplicationController
   	puts params.inspect
   	course = Course.find params[:id]
   	student_list = JSON.parse(course.student_list)
-  	student_list[params[:student]][answer] += 1
+  	student_list[params[:student]]["answer"] += 1
   	course.student_list = student_list.to_json
   	course.save!
-  	redirect_to course_path(params[:id])
+    respond_to do |format|
+  	     format.json do
+          render :json => {name: params[:student], value: student_list[params[:student]]["answer"]}.to_json #, status: "success"
+        end
+      end
   end
 
   def absent
+    puts params.inspect
+    course = Course.find params[:id]
+    student_list = JSON.parse(course.student_list)
+    student_list[params[:student]]["absent"] += 1
+    course.student_list = student_list.to_json
+    course.save!
+    respond_to do |format|
+         format.json do
+          render :json => {name: params[:student], value: student_list[params[:student]]["absent"]}.to_json #, status: "success"
+        end
+      end    
   end
 
   def pass
+    puts params.inspect
+    course = Course.find params[:id]
+    student_list = JSON.parse(course.student_list)
+    student_list[params[:student]]["pass"] += 1
+    course.student_list = student_list.to_json
+    course.save!
+    respond_to do |format|
+         format.json do
+          render :json => {name: params[:student], value: student_list[params[:student]]["pass"]}.to_json 
+        end
+      end
   end
 	
 	private

@@ -2,29 +2,53 @@
 	<%= @course.name %>
 </p>
 <a href="#" id = "random_student_selector">Select Student at Random</a>
-<p id = "selected_student"></p>
+<p id = "selected_student" style="visibility:hidden;"><br></p>
 
-<div id= "buttons" style="display:none;">
+<div id= "buttons" style="visibility:hidden;">
 	<button type="button" id="answer" style="color:blue">Question Answered</button>
-	<button type="button" id="absent" style="color:red">Student Absent</button>
-	<button type="button" id="pass" stye="color:black">Student Passed</button>
+	<button type="button" id="pass" style="color:red">Student Passed</button>
+	<button type="button" id="absent" stye="color:black">Student Absent</button>
 </div>
 
-<a href="#" id = "toggle_student_list">Students(click to collapse):</a>
-	<div id= "student_list">
-		<ul>
-		<% JSON.parse(@course.student_list).keys().each do |student| %>
-			<li><%=student%></li>
-		<% end %>
-		</ul>
+<a href="#" id = "toggle_student_list">Students(click to collapse):</a><br>
+	<div id= "student_list" style="float:left">
+		<table id = "student_info" class = "display" cellspacing = "0" width = "30%" text-align = "center">
+			<thead>
+				<tr>
+					<th>Student Name</th>
+					<th>Answered</th>
+					<th>Passed</th>
+					<th>Absent</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% JSON.parse(@course.student_list).each do |name, record| %>
+					<tr>
+						<td><%=name%></td>
+						<td id = "<%=name%>_answer"><%=record["answer"]%></td>
+						<td id = "<%=name%>_pass"><%=record["pass"]%></td>
+						<td id = "<%=name%>_absent"><%=record["absent"]%></td>
+					</tr>
+				<% end %>
+			</tbody>			
+		</table>
 
 	</div>
-<br>
+<br style="clear:both">
 <%= link_to 'Edit', edit_course_path %> 
 <%= link_to 'Back', user_path(@course.user_id) %>
 
 <script type="text/javascript">
-	var student = null;
+	$(document).ready(function() {
+		$('#student_info').dataTable({
+			//"paging":   false
+		});
+		$.ajaxSetup({
+  			headers: {
+    			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+  			}
+		});
+		var student = null;
 	$("#toggle_student_list").click(function(e){
 		e.preventDefault();
 		$("#student_list").slideToggle();
@@ -34,24 +58,53 @@
 		var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
 		student = student_list[Math.floor(Math.random()*student_list.length)];
 		console.log(student);
-		$("#selected_student").text(student)
-		$("#buttons").show();
+		$("#selected_student").text(student);
+		$("#selected_student").css('visibility','visible');
+		$("#buttons").css('visibility','visible');
 	})
 	$("#answer").click(function(e){
-		console.log("test")
+		//console.log("test")
 		e.preventDefault();
 		$.ajax({
   			type: "POST",
   			url: "<%= answer_course_path(@course.id) %>",
   			data: {student:student},
-  			success: function(){},
+  			success: function(data){
+  				$("#"+data["name"]+"_answer").html(data["value"])
+  			},
   			dataType: "json"
 		});
+		$("#buttons").css('visibility','hidden');
+		$("#selected_student").css('visibility','hidden');
 	})
 	$("#absent").click(function(e){
 		e.preventDefault();
+		$.ajax({
+  			type: "POST",
+  			url: "<%= absent_course_path(@course.id) %>",
+  			data: {student:student},
+  			success: function(data){
+  				$("#"+data["name"]+"_absent").html(data["value"])
+  			},
+  			dataType: "json"
+		});
+		$("#buttons").css('visibility','hidden');
+		$("#selected_student").css('visibility','hidden');
 	})
 	$("#pass").click(function(e){
 		e.preventDefault();
+		$.ajax({
+  			type: "POST",
+  			url: "<%= pass_course_path(@course.id) %>",
+  			data: {student:student},
+  			success: function(data){
+  				$("#"+data["name"]+"_pass").html(data["value"])
+  			},
+  			dataType: "json"
+		});
+		$("#buttons").css('visibility','hidden');
+		$("#selected_student").css('visibility','hidden');
 	})
+})
+	
 </script>

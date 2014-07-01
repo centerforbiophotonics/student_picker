@@ -14,9 +14,13 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %><br>
     <%= f.label :student_list %><br>
-    <%= f.text_field :student_list %>
+    <%= f.text_field :student_list, :value=> JSON.parse(@course.student_list).keys().sort().join(", ") %>
   </div>
   <div class="actions">
     <%= f.submit %>
   </div>
   <% end %>
+
+  <script type="text/javascript">
+    var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
+  </script>

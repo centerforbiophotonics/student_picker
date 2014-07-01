@@ -12,7 +12,7 @@
 		<%= link_to 'Show', course%><br>
 		<body>Students:
 			<ul>
-				<% JSON.parse(course.student_list).keys().each do |student| %>
+				<% JSON.parse(course.student_list).keys().sort().each do |student| %>
 					<li><%=student%></li>
 				<% end %>
 			</ul>
