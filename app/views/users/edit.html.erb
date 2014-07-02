@@ -5,7 +5,7 @@
 <% @user.courses.each do |c| %>
 	<li>
 		<%= link_to "Edit #{c.name}", edit_user_course_path(c.user_id, c.id)  %>
-		<td><%= link_to 'Destroy', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+		<td><%= link_to 'Delete Course', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
 	</li>
 <% end %>
  
@@ -22,5 +22,5 @@
 	</p>
 <% end %>
 
-<%= link_to 'Show', @user %> |
-<%= link_to 'Back', users_path %>
+<%= link_to 'Display User', @user %> |
+<%= link_to 'Dispay All Users', users_path %>

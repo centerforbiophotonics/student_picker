@@ -5,7 +5,7 @@ class CoursesController < ApplicationController
 		@course = @user.courses.create(course_params)
 		student_list = {}
 		course_params[:student_list].split(/[,\t]+/).each do |student_name|
-			student_list[student_name]	= {
+			student_list[student_name.strip()]	= {
 				:answer => 0,
 				:absent => 0,
 				:pass => 0

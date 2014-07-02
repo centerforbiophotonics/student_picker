@@ -1,3 +1,4 @@
+<head><link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css"></head>
 <p><strong>Course:</strong>
 	<%= @course.name %>
 </p>
@@ -5,9 +6,9 @@
 <p id = "selected_student" style="visibility:hidden;"><br></p>
 
 <div id= "buttons" style="visibility:hidden;">
-	<button type="button" id="answer" style="color:blue">Question Answered</button>
-	<button type="button" id="pass" style="color:red">Student Passed</button>
-	<button type="button" id="absent" stye="color:black">Student Absent</button>
+	<button type="button" id="answer" class="pure-button" style="background: rgb(28, 184, 65)">Question Answered</button>
+	<button type="button" id="pass" class="pure-button" style="background: rgb(202, 60, 60)">Student Passed</button>
+	<button type="button" id="absent" class="pure-button" stye="background: rgb(66, 184, 221)">Student Absent</button>
 </div>
 
 <a href="#" id = "toggle_student_list">Students(click to collapse):</a><br>
@@ -16,9 +17,9 @@
 			<thead>
 				<tr>
 					<th>Student Name</th>
-					<th>Answered</th>
-					<th>Passed</th>
-					<th>Absent</th>
+					<th style="color:rgb(28, 184, 65)">Answered</th>
+					<th style="color:rgb(202, 60, 60)">Passed</th>
+					<th style="color:rgb(66, 184, 221)">Absent</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -41,7 +42,9 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('#student_info').dataTable({
-			//"paging":   false
+			"paging": false,
+			//"scrollY": "400px",
+        	//"scrollCollapse": true,
 		});
 		$.ajaxSetup({
   			headers: {
@@ -71,6 +74,7 @@
   			data: {student:student},
   			success: function(data){
   				$("#"+data["name"]+"_answer").html(data["value"])
+  				console.log(data)
   			},
   			dataType: "json"
 		});
