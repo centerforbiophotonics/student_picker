@@ -6,9 +6,9 @@
 <p id = "selected_student" style="visibility:hidden;"><br></p>
 
 <div id= "buttons" style="visibility:hidden;">
-	<button type="button" id="answer" class="pure-button" style="background: rgb(28, 184, 65)">Question Answered</button>
-	<button type="button" id="pass" class="pure-button" style="background: rgb(202, 60, 60)">Student Passed</button>
-	<button type="button" id="absent" class="pure-button" stye="background: rgb(66, 184, 221)">Student Absent</button>
+	<button type="button" id="answer" class="pure-button pure-button-active" style="background: rgb(28, 184, 65); border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);">Question Answered</button>
+	<button type="button" id="pass" class="pure-button pure-button-active" style="background: rgb(202, 60, 60)">Student Passed</button>
+	<button type="button" id="absent" class="pure-button pure-button-active" stye="background: rgb(66, 184, 221)">Student Absent</button>
 </div>
 
 <a href="#" id = "toggle_student_list">Students(click to collapse):</a><br>
@@ -43,8 +43,8 @@
 	$(document).ready(function() {
 		$('#student_info').dataTable({
 			"paging": false,
-			//"scrollY": "400px",
-        	//"scrollCollapse": true,
+			"scrollY": "400px",
+        	"scrollCollapse": true,
 		});
 		$.ajaxSetup({
   			headers: {
@@ -80,6 +80,7 @@
 		});
 		$("#buttons").css('visibility','hidden');
 		$("#selected_student").css('visibility','hidden');
+		oTable.fnReloadAjax();
 	})
 	$("#absent").click(function(e){
 		e.preventDefault();
@@ -94,6 +95,7 @@
 		});
 		$("#buttons").css('visibility','hidden');
 		$("#selected_student").css('visibility','hidden');
+		oTable.fnReloadAjax();
 	})
 	$("#pass").click(function(e){
 		e.preventDefault();
@@ -108,6 +110,7 @@
 		});
 		$("#buttons").css('visibility','hidden');
 		$("#selected_student").css('visibility','hidden');
+		oTable.fnReloadAjax();
 	})
 })
 	

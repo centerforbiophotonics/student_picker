@@ -1,18 +1,20 @@
 class CoursesController < ApplicationController
-	
+  require 'csv'
 	def create
+    puts params.inspect
 		@user = User.find(params[:user_id])
-		@course = @user.courses.create(course_params)
-		student_list = {}
-		course_params[:student_list].split(/[,\t]+/).each do |student_name|
-			student_list[student_name.strip()]	= {
-				:answer => 0,
-				:absent => 0,
-				:pass => 0
-			}
-		end
-		@course.student_list = student_list.to_json()
+		@course = @user.courses.new
+
+    CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
+      student = Student.new
+      student.name = row["Name"]
+      student.sid = row["User ID"]
+      student.save!
+      courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+      courses_student.save!
+    end
 		@course.save!
+    @user.save!
 		redirect_to user_path(@user)
 	end
   

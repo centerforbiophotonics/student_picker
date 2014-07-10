@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Courses:</strong>
+  <%= @courses_student.courses %>
+</p>
+
+<p>
+  <strong>Students:</strong>
+  <%= @courses_student.students %>
+</p>
+
+<p>
+  <strong>Answered:</strong>
+  <%= @courses_student.answered %>
+</p>
+
+<p>
+  <strong>Passed:</strong>
+  <%= @courses_student.passed %>
+</p>
+
+<p>
+  <strong>Absent:</strong>
+  <%= @courses_student.absent %>
+</p>
+
+<p>
+  <strong>Note:</strong>
+  <%= @courses_student.note %>
+</p>
+
+<%= link_to 'Edit', edit_courses_student_path(@courses_student) %> |
+<%= link_to 'Back', courses_students_path %>

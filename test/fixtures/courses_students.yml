@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  courses_id: 
+  students_id: 
+  answered: 1
+  passed: 1
+  absent: 1
+  note: MyString
+
+two:
+  courses_id: 
+  students_id: 
+  answered: 1
+  passed: 1
+  absent: 1
+  note: MyString

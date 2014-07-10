@@ -11,17 +11,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140624213235) do
+ActiveRecord::Schema.define(version: 20140710215505) do
 
   create_table "courses", force: true do |t|
     t.string   "name"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "student_list"
   end
 
   add_index "courses", ["user_id"], name: "index_courses_on_user_id"
+
+  create_table "courses_students", force: true do |t|
+    t.integer  "courses_id"
+    t.integer  "students_id"
+    t.integer  "answered"
+    t.integer  "passed"
+    t.integer  "absent"
+    t.string   "note"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "courses_students", ["courses_id"], name: "index_courses_students_on_courses_id"
+  add_index "courses_students", ["students_id"], name: "index_courses_students_on_students_id"
+
+  create_table "students", force: true do |t|
+    t.string   "name"
+    t.integer  "sid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "name"

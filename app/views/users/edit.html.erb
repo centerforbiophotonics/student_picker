@@ -10,16 +10,11 @@
 <% end %>
  
 <h4>Add a course:</h4>
-<%= form_for([@user, @user.courses.build]) do |f| %>
-	<p>
-		<%= f.label :name %><br>
-		<%= f.text_field :name %><br>
-		<%= f.label :student_list %><br>
-		<%= f.text_field :student_list %><br>
-	</p>
-	<p>
-		<%= f.submit %>
-	</p>
+<%= form_for([@user, @user.courses.build], :html=> {:multipart=>true}) do |f| %>
+	
+	<% @course = @user.courses.new %>
+	<%= render :partial => "courses/form" %>
+
 <% end %>
 
 <%= link_to 'Display User', @user %> |
