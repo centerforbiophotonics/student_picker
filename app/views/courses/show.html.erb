@@ -23,7 +23,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<% JSON.parse(@course.student_list).each do |name, record| %>
+				<% @course.students.each do |name, record| %>
 					<tr>
 						<td><%=name%></td>
 						<td id = "<%=name%>_answer"><%=record["answer"]%></td>
@@ -58,10 +58,10 @@
 	})
 	$("#random_student_selector").click(function(e){
 		e.preventDefault();
-		var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
-		student = student_list[Math.floor(Math.random()*student_list.length)];
-		console.log(student);
-		$("#selected_student").text(student);
+		// var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
+		//student = student_list[Math.floor(Math.random()*student_list.length)];
+		//console.log(student);
+		//$("#selected_student").text(student);
 		$("#selected_student").css('visibility','visible');
 		$("#buttons").css('visibility','visible');
 	})
