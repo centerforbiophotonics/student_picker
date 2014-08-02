@@ -5,13 +5,16 @@ class CoursesController < ApplicationController
 		@user = User.find(params[:user_id])
 		@course = @user.courses.new
     @course.name = params[:course][:name]
-    CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
-     student = Student.new
-     student.name = row["Name"]
-     student.sid = row["User ID"]
-     student.save!
-     courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
-     courses_student.save!
+    @course.save!
+    if(params[:course][:student_list].present?)  
+      CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
+       student = Student.new
+       student.name = row["Name"]
+       student.sid = row["User ID"]
+       student.save!
+       courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+       courses_student.save!
+      end
     end
 		@course.save!
     @user.save!
@@ -39,60 +42,74 @@ class CoursesController < ApplicationController
   def update
 	@course = Course.find params[:id]
     @course.name = params[:course][:name]
+    sid_array = []
     CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
-     student = Student.new
-     student.name = row["Name"]
-     student.sid = row["User ID"]
-     student.save!
-     courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
-     courses_student.save!
+     sid_array << row["User ID"].to_i
+     student = Student.where(:sid => row["User ID"]).first
+     if(!student.present?)
+       student = Student.new
+       student.name = row["Name"]
+       student.sid = row["User ID"]
+       student.save!
+       courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+       courses_student.save!
+     else
+       student.name = row["Name"]
+       student.sid = row["User ID"]
+       student.save!
+     end 
     end
+    Student.
+      joins(:courses_student).
+      where("courses_id = #{@course.id}").
+      where("sid not in (#{sid_array.to_s.gsub('[','').gsub(']','')})").
+      destroy_all
     respond_to do |format|
       format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
+      format.html { redirect_to @course.user }
       #format.json { head :no_content }
     end
   end
 
   def answer
-  	puts params.inspect
   	course = Course.find params[:id]
-  	#student_list = JSON.parse(course.student_list)
-  	#student_list[params[:student]]["answer"] += 1
-  	#course.student_list = student_list.to_json
+    courses_students = course.courses_students.where(:students_id => params[:student][:id]).first 
+
+    courses_students.answered += 1
+    courses_students.save! 
   	course.save!
-    #respond_to do |format|
-  	#     format.json do
-    #      render :json => {name: params[:student], value: student_list[params[:student]]["answer"]}.to_json #, status: "success"
-    #    end
-    #  end
+    respond_to do |format|
+  	    format.json do
+          render :json => {name: params[:student][:name], value: courses_students.answered }
+        end
+     end
   end
 
   def absent
-    puts params.inspect
     course = Course.find params[:id]
-    #student_list = JSON.parse(course.student_list)
-    #student_list[params[:student]]["absent"] += 1
-    #course.student_list = student_list.to_json
+    courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
+    courses_students.absent += 1
+    courses_students.save!
     course.save!
-    #respond_to do |format|
-    #     format.json do
-    #      render :json => {name: params[:student], value: student_list[params[:student]]["absent"]}.to_json #, status: "success"
-    #    end
-    #  end    
+    respond_to do |format|
+        format.json do
+          render :json => {name: params[:student][:name], value: courses_students.absent }
+        end
+     end    
   end
 
   def pass
     puts params.inspect
     course = Course.find params[:id]
-    #student_list = JSON.parse(course.student_list)
-    #student_list[params[:student]]["pass"] += 1
-    #course.student_list = student_list.to_json
+    courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
+    courses_students.passed += 1
+    courses_students.save!
     course.save!
-    #respond_to do |format|
-    #     format.json do
-    #      render :json => {name: params[:student], value: student_list[params[:student]]["pass"]}.to_json 
-    #    end
-    #  end
+    respond_to do |format|
+        format.json do
+         render :json => {name: params[:student][:name], value: courses_students.passed} 
+       end
+     end
   end
 	
 	private

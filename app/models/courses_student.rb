@@ -1,4 +1,4 @@
 class CoursesStudent < ActiveRecord::Base
-  belongs_to :courses
-  belongs_to :students
+  belongs_to :course, :foreign_key => "courses_id"
+  belongs_to :student, :foreign_key => "students_id"
 end

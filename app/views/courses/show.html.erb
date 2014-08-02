@@ -10,7 +10,7 @@
 	<button type="button" id="pass" class="pure-button pure-button-active" style="background: rgb(202, 60, 60)">Student Passed</button>
 	<button type="button" id="absent" class="pure-button pure-button-active" stye="background: rgb(66, 184, 221)">Student Absent</button>
 </div>
-
+<% student_array = Array.new %>
 <a href="#" id = "toggle_student_list">Students(click to collapse):</a><br>
 	<div id= "student_list" style="float:left">
 		<table id = "student_info" class = "display" cellspacing = "0" width = "30%" text-align = "center">
@@ -23,12 +23,13 @@
 				</tr>
 			</thead>
 			<tbody>
-				<% @course.students.each do |name, record| %>
+				<% @course.students.each do |student| %>
 					<tr>
-						<td><%=name%></td>
-						<td id = "<%=name%>_answer"><%=record["answer"]%></td>
-						<td id = "<%=name%>_pass"><%=record["pass"]%></td>
-						<td id = "<%=name%>_absent"><%=record["absent"]%></td>
+						<td><%=student.name%></td>
+						<% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
+						<td id = "<%=student.name%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
+						<td id = "<%=student.name%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
+						<td id = "<%=student.name%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
 					</tr>
 				<% end %>
 			</tbody>			
@@ -36,82 +37,93 @@
 
 	</div>
 <br style="clear:both">
-<%= link_to 'Edit', edit_course_path %> 
-<%= link_to 'Back', user_path(@course.user_id) %>
+<%= link_to 'Edit Roster', edit_course_path %> 
+<%= link_to 'User Page', user_path(@course.user_id) %>
 
 <script type="text/javascript">
+	var oTable = null;
 	$(document).ready(function() {
-		$('#student_info').dataTable({
-			"paging": false,
-			"scrollY": "400px",
-        	"scrollCollapse": true,
-		});
+		var student = null;
+		function initTable()
+		{
+			oTable = $('#student_info').DataTable({
+				"paging": false,
+				"scrollY": "400px",
+	        	"scrollCollapse": true,
+			});
+		}
+		initTable();
 		$.ajaxSetup({
   			headers: {
     			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
   			}
 		});
-		var student = null;
-	$("#toggle_student_list").click(function(e){
-		e.preventDefault();
-		$("#student_list").slideToggle();
-	})
-	$("#random_student_selector").click(function(e){
-		e.preventDefault();
-		// var student_list = <%=raw JSON.parse(@course.student_list).keys().to_json() %>;
-		//student = student_list[Math.floor(Math.random()*student_list.length)];
-		//console.log(student);
-		//$("#selected_student").text(student);
-		$("#selected_student").css('visibility','visible');
-		$("#buttons").css('visibility','visible');
-	})
-	$("#answer").click(function(e){
-		//console.log("test")
-		e.preventDefault();
-		$.ajax({
-  			type: "POST",
-  			url: "<%= answer_course_path(@course.id) %>",
-  			data: {student:student},
-  			success: function(data){
-  				$("#"+data["name"]+"_answer").html(data["value"])
-  				console.log(data)
-  			},
-  			dataType: "json"
-		});
-		$("#buttons").css('visibility','hidden');
-		$("#selected_student").css('visibility','hidden');
-		oTable.fnReloadAjax();
-	})
-	$("#absent").click(function(e){
-		e.preventDefault();
-		$.ajax({
-  			type: "POST",
-  			url: "<%= absent_course_path(@course.id) %>",
-  			data: {student:student},
-  			success: function(data){
-  				$("#"+data["name"]+"_absent").html(data["value"])
-  			},
-  			dataType: "json"
-		});
-		$("#buttons").css('visibility','hidden');
-		$("#selected_student").css('visibility','hidden');
-		oTable.fnReloadAjax();
-	})
-	$("#pass").click(function(e){
-		e.preventDefault();
-		$.ajax({
-  			type: "POST",
-  			url: "<%= pass_course_path(@course.id) %>",
-  			data: {student:student},
-  			success: function(data){
-  				$("#"+data["name"]+"_pass").html(data["value"])
-  			},
-  			dataType: "json"
-		});
-		$("#buttons").css('visibility','hidden');
-		$("#selected_student").css('visibility','hidden');
-		oTable.fnReloadAjax();
-	})
+		$("#toggle_student_list").click(function(e){
+			e.preventDefault();
+			$("#student_list").slideToggle();
+		})
+		$("#random_student_selector").click(function(e){
+			e.preventDefault();
+			var student_list = <%= raw student_array.to_json %>;
+			console.log(student_list);
+			student = student_list[Math.floor(Math.random()*student_list.length)];
+			console.log(student);
+			$("#selected_student").text(student.name);
+			$("#selected_student").css('visibility','visible');
+			$("#buttons").css('visibility','visible');
+		})
+		$("#answer").click(function(e){
+			//console.log("test")
+			e.preventDefault();
+			$.ajax({
+	  			type: "POST",
+	  			url: "<%= answer_course_path(@course.id) %>",
+	  			data: {student:student},
+	  			success: function(data){
+	  				$("#"+data["name"]+"_answer").html(data["value"])
+	  				console.log(data)
+	  				location.reload()
+	  			},
+	  			dataType: "json",
+	  			async: "false"
+			});
+			$("#buttons").css('visibility','hidden');
+			$("#selected_student").css('visibility','hidden');
+		})
+		$("#absent").click(function(e){
+			e.preventDefault();
+			$.ajax({
+	  			type: "POST",
+	  			url: "<%= absent_course_path(@course.id) %>",
+	  			data: {student:student},
+	  			success: function(data){
+	  				$("#"+data["name"]+"_absent").html(data["value"])
+	  				console.log(data)
+	  				location.reload()
+	  			},
+	  			dataType: "json"
+			});
+			$("#buttons").css('visibility','hidden');
+			$("#selected_student").css('visibility','hidden');
+			
+		})
+		$("#pass").click(function(e){
+			e.preventDefault();
+			$.ajax({
+	  			type: "POST",
+	  			url: "<%= pass_course_path(@course.id) %>",
+	  			data: {student:student},
+	  			success: function(data){
+	  				$("#"+data["name"]+"_pass").html(data["value"])
+	  				console.log(data)
+	  				location.reload()
+	  			},
+	  			dataType: "json"
+			});
+			$("#buttons").css('visibility','hidden');
+			$("#selected_student").css('visibility','hidden');
+			
+		})
 })
 	
 </script>

@@ -4,7 +4,7 @@
 
 <% @user.courses.each do |c| %>
 	<li>
-		<%= link_to "Edit #{c.name}", edit_user_course_path(c.user_id, c.id)  %>
+		<%= link_to "Edit #{c.name} (modify roster)", edit_user_course_path(c.user_id, c.id)  %>
 		<td><%= link_to 'Delete Course', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
 	</li>
 <% end %>

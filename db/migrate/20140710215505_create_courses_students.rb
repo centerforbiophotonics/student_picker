@@ -3,9 +3,9 @@ class CreateCoursesStudents < ActiveRecord::Migration
     create_table :courses_students do |t|
       t.references :courses, index: true
       t.references :students, index: true
-      t.integer :answered
-      t.integer :passed
-      t.integer :absent
+      t.integer :answered, :default => 0
+      t.integer :passed, :default => 0
+      t.integer :absent, :default => 0
       t.string :note
 
       t.timestamps

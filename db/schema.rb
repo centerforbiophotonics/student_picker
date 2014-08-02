@@ -25,9 +25,9 @@ ActiveRecord::Schema.define(version: 20140710215505) do
   create_table "courses_students", force: true do |t|
     t.integer  "courses_id"
     t.integer  "students_id"
-    t.integer  "answered"
-    t.integer  "passed"
-    t.integer  "absent"
+    t.integer  "answered",    default: 0
+    t.integer  "passed",      default: 0
+    t.integer  "absent",      default: 0
     t.string   "note"
     t.datetime "created_at"
     t.datetime "updated_at"
