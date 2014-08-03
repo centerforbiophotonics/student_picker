@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby '2.0.0'
 
 gem 'tzinfo-data'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -15,6 +16,7 @@ end
 group :production do
   gem 'pg'
   gem 'thin'
+  gem 'rails_12factor' #for static asset serving in production
 end
 
 # Use SCSS for stylesheets
