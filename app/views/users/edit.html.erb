@@ -1,21 +1,30 @@
 <h1>Editing user</h1>
 
 <%= render 'form' %>
-
-<% @user.courses.each do |c| %>
-	<li>
-		<%= link_to "Edit #{c.name} (modify roster)", edit_user_course_path(c.user_id, c.id)  %>
-		<td><%= link_to 'Delete Course', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-	</li>
-<% end %>
- 
-<h4>Add a course:</h4>
-<%= form_for([@user, @user.courses.build], :html=> {:multipart=>true}) do |f| %>
-	
-	<% @course = @user.courses.new %>
-	<%= render :partial => "courses/form" %>
-
-<% end %>
-
+Discard changes and:
 <%= link_to 'Display User', @user %> |
 <%= link_to 'Dispay All Users', users_path %>
+
+<div id="list_course">
+  <h4>Your Courses:</h4>
+  <% @user.courses.each do |c| %>
+    <li>
+      <%= c.name.to_s%>:
+      <%= link_to "Edit (modify roster)", edit_user_course_path(c.user_id, c.id) %> |
+      <td><%= link_to 'Delete Course', c, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </li>
+  <% end %>
+</div>
+
+
+<div id="add_course">
+  <h4>Add a course:</h4>
+  <%= form_for([@user, @user.courses.build], :html=> {:multipart=>true}) do |f| %>
+
+    <% @course = @user.courses.new %>
+    <%= render :partial => "courses/form" %>
+
+  <% end %>
+</div>
+
+

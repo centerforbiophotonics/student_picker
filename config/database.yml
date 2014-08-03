@@ -20,6 +20,18 @@ test:
   <<: *default
   database: db/test.sqlite3
 
+##local sqlite3 prod db
+#production:
+#  <<: *default
+#  database: db/production.sqlite3
+
+#Heroku PostgreSQL prod db
+#  heroku pg:psql --app coldcaller rose
+#  postgres://bkoodwkgkdkgbi:Nzy8AN66jexVyDjjlwFvCqhoA4@ec2-50-19-219-235.compute-1.amazonaws.com:5432/dbtr3901rmv4n8
 production:
-  <<: *default
-  database: db/production.sqlite3
+  adapter: postgresql
+  host: ec2-50-19-219-235.compute-1.amazonaws.com
+  username: bkoodwkgkdkgbi
+  database: dbtr3901rmv4n8
+  password: Nzy8AN66jexVyDjjlwFvCqhoA4
+  port: 5432
