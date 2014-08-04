@@ -1,43 +1,41 @@
-<div class="page">
-    <h2>Course: <%= @course.name %></h2>
-    <a href="#" id="random_student_selector">Select Student at Random</a>
-    <p id="selected_student" style="visibility:hidden;"></p>
+<h2 class="title">Course: <%= @course.name %></h2>
+<a href="#" id="random_student_selector">Select Student at Random</a>
+<p id="selected_student" style="visibility:hidden;"></p>
 
-    <div id="buttons" style="visibility:hidden;">
-        <button type="button" id="answer" class="pure-button pure-button-active" style="background: rgb(28, 184, 65); border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);">Question Answered</button>
-        <button type="button" id="pass" class="pure-button pure-button-active" style="background: rgb(202, 60, 60)">Student Passed</button>
-        <button type="button" id="absent" class="pure-button pure-button-active" stye="background: rgb(66, 184, 221)">Student Absent</button>
-    </div>
-    <% student_array = Array.new %>
-    <a href="#" id="toggle_student_list">Toggle Student List</a><br>
-    <div id= "student_list" style="float:left">
-        <table id="student_info" class="display" cellspacing="0" width="30%" text-align="center">
-            <thead>
-            <tr>
-                <th>Student Name</th>
-                <th style="color:rgb(28, 184, 65)">Answered</th>
-                <th style="color:rgb(202, 60, 60)">Passed</th>
-                <th style="color:rgb(66, 184, 221)">Absent</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% @course.students.each do |student| %>
-              <tr>
-                  <td><%=student.name%></td>
-                  <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
-                  <td id="<%=student.name%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
-                  <td id="<%=student.name%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
-                  <td id="<%=student.name%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
-              </tr>
-            <% end %>
-            </tbody>
-        </table>
-
-    </div>
-    <br style="clear:both">
-    <%= link_to 'Edit Roster', edit_course_path %>
-    <%= link_to 'User Page', user_path(@course.user_id) %>
+<div id="buttons" style="visibility:hidden;">
+    <button type="button" id="answer" class="pure-button pure-button-active" style="background: rgb(28, 184, 65); border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);">Question Answered</button>
+    <button type="button" id="pass" class="pure-button pure-button-active" style="background: rgb(202, 60, 60)">Student Passed</button>
+    <button type="button" id="absent" class="pure-button pure-button-active" stye="background: rgb(66, 184, 221)">Student Absent</button>
 </div>
+<% student_array = Array.new %>
+<a href="#" id="toggle_student_list">Toggle Student List</a><br>
+<div id= "student_list" style="float:left">
+    <table id="student_info" class="display" cellspacing="0" width="30%" text-align="center">
+        <thead>
+        <tr>
+            <th>Student Name</th>
+            <th style="color:rgb(28, 184, 65)">Answered</th>
+            <th style="color:rgb(202, 60, 60)">Passed</th>
+            <th style="color:rgb(66, 184, 221)">Absent</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @course.students.each do |student| %>
+          <tr>
+              <td><%=student.name%></td>
+              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
+              <td id="<%=student.name%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
+              <td id="<%=student.name%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
+              <td id="<%=student.name%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
+          </tr>
+        <% end %>
+        </tbody>
+    </table>
+
+</div>
+<br style="clear:both">
+<%= link_to 'Edit Roster', edit_course_path %>
+<%= link_to 'User Page', user_path(@course.user_id) %>
 
 
 <script type="text/javascript">
