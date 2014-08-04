@@ -1,12 +1,14 @@
 class CoursesController < ApplicationController
   require 'csv'
-	def create
+
+  def create #TODO: figure out what calls to save! are redundant
     puts params.inspect
-		@user = User.find(params[:user_id])
-		@course = @user.courses.new
+    @user = User.find(params[:user_id])
+    @course = @user.courses.new
     @course.name = params[:course][:name]
     @course.save!
-    if(params[:course][:student_list].present?)  
+
+    if(params[:course][:student_list].present?)
       CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
        student = Student.new
        student.name = row["Name"]
@@ -16,32 +18,36 @@ class CoursesController < ApplicationController
        courses_student.save!
       end
     end
-		@course.save!
+    @course.save!
     @user.save!
-		redirect_to user_path(@user)
+    redirect_to user_path(@user)
 	end
   
   def show
-  		@course = Course.find params[:id]
+    @course = Course.find params[:id]
   end
 
   def destroy
-	puts params.inspect
-	@course = Course.find params[:id]
-    @course.destroy
-    respond_to do |format|
-      format.html { redirect_to @course.user}
-      format.json { head :no_content }
+    puts params.inspect
+    @course = Course.find params[:id]
+      @course.destroy
+      respond_to do |format|
+        format.html { redirect_to @course.user}
+        format.json { head :no_content }
     end
   end
   
   def edit
-	@course = Course.find params[:id]
+	  @course = Course.find params[:id]
   end
   
   def update
-	@course = Course.find params[:id]
+	  @course = Course.find params[:id]
+
+    #Update course name
     @course.name = params[:course][:name]
+
+    #Add new students or update existing students if found in the roster
     sid_array = []
     CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
      sid_array << row["User ID"].to_i
@@ -59,11 +65,14 @@ class CoursesController < ApplicationController
        student.save!
      end 
     end
+
+    #Destroy students who are not present in the new roster
     Student.
       joins(:courses_student).
       where("courses_id = #{@course.id}").
       where("sid not in (#{sid_array.to_s.gsub('[','').gsub(']','')})").
       destroy_all
+
     respond_to do |format|
       format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
       format.html { redirect_to @course.user }
