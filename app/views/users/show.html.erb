@@ -3,8 +3,8 @@
 <strong><h3>Courses:</h3></strong>
 <% @user.courses.each do |course| %>
   <div class="course">
-    <h4 id="box_title"><%= course.name %></h4>
-    <div id="box_content">
+    <h4 class="box_title"><%= course.name %></h4>
+    <div class="box_content">
         <%= link_to 'Edit Course', edit_user_course_path(course.user_id, course.id)%> |
         <%= link_to 'Open Student Selector', course%><br>
         <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a><br>

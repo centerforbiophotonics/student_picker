@@ -35,3 +35,23 @@ body {
     margin-bottom:10px;
     margin-top:10px;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+}
+
+a {
+    font-family: 'Nunito', sans-serif;
+}
+
+.box_title {
+    margin: 0px;
+    text-align: left;
+    padding: 5px;
+    background-color:#333;
+    color:white
+}
+
+.box_content {
+    padding: 5px;
+}
