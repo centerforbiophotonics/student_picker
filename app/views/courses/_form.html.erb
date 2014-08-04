@@ -13,11 +13,17 @@
   <div class="field">
     <%= f.label :name %><br>
     <%= f.text_field :name %><br>
+  </div>
+
+  <div class="field">
     <%= f.label :student_list, "Upload Student Roster" %><br>
     <%= f.file_field :student_list %>
-    <br>Files must be in <strong>.csv</strong> format, no other excel files
-    <br>A roster <strong>must</strong> be uploaded currently, make sure to select a file<br>
-    Roster upload may take <strong>~1-2 minutes</strong>, do not click "Update/Create Course" multiple times
+
+    <p id="warning_text">
+        Files must be in <strong>.csv</strong> format, no other excel files
+        <br>A roster <strong>must</strong> be uploaded currently, make sure to select a file<br>
+        Roster upload may take <strong>~1-2 minutes</strong>, do not click "Update/Create Course" multiple times
+    </p>
   </div>
 
   <div class="actions">
