@@ -10,12 +10,14 @@ class CoursesController < ApplicationController
 
     if(params[:course][:student_list].present?)
       CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
-       student = Student.new
-       student.name = row["Name"]
-       student.sid = row["User ID"]
-       student.save!
-       courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
-       courses_student.save!
+        unless row["Name"].blank?
+           student = Student.new
+           student.name = row["Name"]
+           student.sid = row["User ID"]
+           student.save!
+           courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+           courses_student.save!
+        end
       end
     end
     @course.save!
@@ -42,28 +44,29 @@ class CoursesController < ApplicationController
   end
   
   def update
-	  @course = Course.find params[:id]
-
-    #Update course name
+	  @course = Course.find(params[:id])
     @course.name = params[:course][:name]
-
+    @course.save!
     #Add new students or update existing students if found in the roster
     sid_array = []
     CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
-     sid_array << row["User ID"].to_i
-     student = Student.where(:sid => row["User ID"]).first
-     if(!student.present?)
-       student = Student.new
-       student.name = row["Name"]
-       student.sid = row["User ID"]
-       student.save!
-       courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
-       courses_student.save!
-     else
-       student.name = row["Name"]
-       student.sid = row["User ID"]
-       student.save!
-     end 
+      unless row["Name"].blank?
+        sid_array << row["User ID"].to_i
+        student = Student.where(:sid => row["User ID"]).first
+        if(!student.present?)
+         student = Student.new
+        end
+        student.name = row["Name"]
+        student.sid = row["User ID"] 
+        student.save!
+
+        unless CoursesStudent.
+                where(:courses_id => @course.id).
+                where(:students_id => student.id).exists?
+          courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+          courses_student.save!
+        end
+      end
     end
 
     #Destroy students who are not present in the new roster
