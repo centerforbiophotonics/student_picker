@@ -15,17 +15,17 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :name %><br>
+    <%= f.label :name %>:<br>
     <%= f.text_field :name, :value => @user.name %>
   </div>
-  
-  <% f.fields_for :courses do |builder| %>
-  <p>
-	<%= builder.label :name, "Course" %><br/>
-	<%= builder.text_area :name %>
-  <%= builder.label :_destroy, "Remove Course" %>
-  </p>
+
+  <% if current_user.present? && current_user.admin %>
+    <div class="field">
+        <%= f.label :admin %>:
+        <%= f.check_box :admin, :value => @user.admin %>
+    </div>
   <% end %>
+
   
   <div class="actions">
     <%= f.submit %>

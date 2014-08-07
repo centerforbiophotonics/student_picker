@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   
-  before_action :configure_devise_permitted_parameters, if: :devise_controller?
+  before_action :configure_devise_permitted_parameters, :if => :devise_controller?
 
   protected
 
@@ -19,6 +19,12 @@ class ApplicationController < ActionController::Base
   			|u| u.permit(registration_params)
   		}
   	end
-  end 
-  #after_filter :flash_to_headers
+  end
+
+  def must_be_admin
+    unless current_user.present? && current_user.admin
+      raise ActionController::RoutingError.new('Not Found')
+    end
+  end
+
 end

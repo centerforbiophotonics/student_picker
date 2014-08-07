@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_filter :check_user_owns_page, only: [:show, :edit, :update, :destroy]
+  before_filter :check_user_owns_page, only: [:show, :edit, :update]
+  before_filter :must_be_admin, only: [:index, :destroy]
+
   # GET /users
   # GET /users.json
   def index
@@ -70,7 +72,7 @@ class UsersController < ApplicationController
     end
 
     def check_user_owns_page
-      if current_user.id != params[:id].to_i
+      if current_user.id != params[:id].to_i && !current_user.admin
         redirect_to :action => "index", :controller => "welcome"
       end
     end
