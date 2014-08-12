@@ -10,7 +10,7 @@
         <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a><br>
         <ul id="student_list-<%=course.id%>" style="display:none">
             <% course.students.sort { |a,b| a.name <=> b.name }.each do |student| %>
-              <li><%= student.name %></li>
+              <li><%= student.name %> | <%= link_to "Edit", edit_student_path(student.id)%></li>
             <% end %>
         </ul>
     </div>

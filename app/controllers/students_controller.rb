@@ -1,6 +1,6 @@
 class StudentsController < ApplicationController
   before_action :set_student, only: [:show, :edit, :update, :destroy]
-  before_filter :must_be_admin, only: [:index]
+  before_filter :must_be_admin, only: [:index ]
 
   # GET /students
   # GET /students.json

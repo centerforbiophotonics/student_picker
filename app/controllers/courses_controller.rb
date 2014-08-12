@@ -53,9 +53,11 @@ class CoursesController < ApplicationController
       unless row["Name"].blank?
         sid_array << row["User ID"].to_i
         student = Student.where(:sid => row["User ID"]).first
+
         if(!student.present?)
          student = Student.new
         end
+
         student.name = row["Name"]
         student.sid = row["User ID"] 
         student.save!
