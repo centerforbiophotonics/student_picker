@@ -1,24 +1,27 @@
 <h2 class="title">Showing User: <%= @user.name %></h2>
 
-<strong><h3>Courses:</h3></strong>
-<% @user.courses.each do |course| %>
-  <div class="course">
-    <h4 class="box_title"><%= course.name %></h4>
-    <div class="box_content">
-        <%= link_to 'Edit Course', edit_user_course_path(course.user_id, course.id)%> |
-        <%= link_to 'Open Student Selector', course%><br>
-        <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a><br>
-        <ul id="student_list-<%=course.id%>" style="display:none">
-            <% course.students.sort { |a,b| a.name <=> b.name }.each do |student| %>
-              <li><%= student.name %> | <%= link_to "Edit", edit_student_path(student.id)%></li>
-            <% end %>
-        </ul>
+
+<% if @user.courses.count > 0 %>
+  <strong><h3>Courses:</h3></strong>
+  <% @user.courses.each do |course| %>
+    <div class="course">
+      <h4 class="box_title"><%= course.name %></h4>
+      <div class="box_content">
+          <%= link_to 'Edit Course', edit_user_course_path(course.user_id, course.id)%> |
+          <%= link_to 'Open Student Selector', course%><br>
+          <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a><br>
+          <ul id="student_list-<%=course.id%>" style="display:none">
+              <% course.students.sort { |a,b| a.name <=> b.name }.each do |student| %>
+                <li><%= student.name %> | <%= link_to "Edit", edit_student_path(student.id)%></li>
+              <% end %>
+          </ul>
+      </div>
     </div>
-  </div>
+  <% end %>
 
 <% end %>
 
-<%= link_to 'Add Courses', edit_user_path(@user) %>
+<%= link_to 'Add Course', edit_user_path(@user), :id => "add_course_link", :class => (@user.courses.count > 0)? "" : "next_step" %>
 
 
 <script type = "text/javascript">

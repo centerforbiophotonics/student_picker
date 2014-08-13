@@ -22,14 +22,19 @@
     <p id="warning_text">
         Files must be in <strong>.csv</strong> format, no other excel files
         <br>A roster <strong>must</strong> be uploaded currently, make sure to select a file<br>
-        Roster upload may take <strong>~1-2 minutes</strong>, do not click "Update/Create Course" multiple times
+        Roster upload may take <strong>~1-2 minutes</strong>, the page is not frozen
     </p>
   </div>
 
-  <div class="actions">
-    <%= f.submit %>
+  <div class="actions" id="course_submit">
+    <%= f.submit :id => "course_submit_button" %>
   </div>
   <% end %>
 
   <script type="text/javascript">
+    $(document).ready(function() {
+        $("#edit_course_<%=@course.id%>, #new_course").submit(function(e){
+          $("#course_submit_button").prop('disabled', true);
+        })
+    })
   </script>

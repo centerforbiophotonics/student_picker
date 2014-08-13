@@ -7,7 +7,10 @@
     <button type="button" id="pass" class="pure-button pure-button-active" style="background: rgb(202, 60, 60)">Student Passed</button>
     <button type="button" id="absent" class="pure-button pure-button-active" style="background: rgb(66, 184, 221)">Student Absent</button>
 </div>
+<h4l><strong>Last student selected: </strong></h4>
+<p id="last_student" style="visibility:visible;"></p>
 <% student_array = Array.new %>
+<%= link_to "Download as CSV", :controller => :courses, :action => :show, :format => :csv %>
 <a href="#" id="toggle_student_list">Toggle Student List</a><br>
 <div id= "student_list" style="float:left">
     <table id="student_info" class="display" cellspacing="0" width="30%" text-align="center">
@@ -37,11 +40,13 @@
 <%= link_to 'Edit Roster', edit_course_path %>
 <%= link_to 'User Page', user_path(@course.user_id) %>
 
-
+<!-- A whole series of button shenanigans, updates as needed and such -->
 <script type="text/javascript">
 	var oTable = null;
 	$(document).ready(function() {
 		var student = null;
+		var last_student;
+		$("#last_student").text(decodeURIComponent(window.location.search).slice(1));
 		function initTable()
 		{
 			oTable = $('#student_info').DataTable({
@@ -65,8 +70,9 @@
 			var student_list = <%= raw student_array.to_json %>;
 			console.log(student_list);
 			student = student_list[Math.floor(Math.random()*student_list.length)];
+			last_student = student.name+" ("+student.SID+")";
 			console.log(student);
-			$("#selected_student").text(student.name);
+			$("#selected_student").text(student.name+" ("+student.SID+")");
 			$("#selected_student").css('visibility','visible');
 			$("#buttons").css('visibility','visible');
 		})
@@ -81,12 +87,22 @@
 	  				$("#"+data["name"]+"_answer").html(data["value"])
 	  				console.log(data)
 	  				location.reload()
+	  				//$("#selected_student").css('visibility','hidden');
 	  			},
 	  			dataType: "json",
 	  			async: "false"
 			});
 			$("#buttons").css('visibility','hidden');
-			$("#selected_student").css('visibility','hidden');
+			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			if(window.location.search.substring(0,1) != "?")
+			{
+				window.location.href += "?"+(encodeURIComponent(last_student));
+			}
+			else
+			{
+				window.location.href -= window.location.search;
+				window.location.href = "?"+encodeURIComponent(last_student);
+			}
 		})
 		$("#absent").click(function(e){
 			e.preventDefault();
@@ -102,8 +118,16 @@
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			$("#selected_student").css('visibility','hidden');
-			
+			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			if(window.location.search.substring(0,1) != "?")
+			{
+				window.location.href += "?"+(encodeURIComponent(last_student));
+			}
+			else
+			{
+				window.location.href -= window.location.search;
+				window.location.href = "?"+encodeURIComponent(last_student);
+			}	
 		})
 		$("#pass").click(function(e){
 			e.preventDefault();
@@ -119,8 +143,16 @@
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			$("#selected_student").css('visibility','hidden');
-			
+			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			if(window.location.search.substring(0,1) != "?")
+			{
+				window.location.href += "?"+(encodeURIComponent(last_student));
+			}
+			else
+			{
+				window.location.href -= window.location.search;
+				window.location.href = "?"+encodeURIComponent(last_student);
+			}
 		})
 })
 	

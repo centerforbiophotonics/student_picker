@@ -27,6 +27,11 @@ class CoursesController < ApplicationController
   
   def show
     @course = Course.find params[:id]
+    respond_to do |format|
+      format.csv { send_data @course.to_csv, :filename => "student_participation_for_#{@course.name}.csv"}
+      format.html {}
+      #format.json { head :no_content }
+    end
   end
 
   def destroy

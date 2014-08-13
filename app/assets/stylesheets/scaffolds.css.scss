@@ -4,6 +4,8 @@ body {
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
   line-height: 18px;
+  background: url(image_path('bg.png'));
+  background-size: cover;
 }
 
 p, ol, ul, td {
@@ -67,3 +69,5 @@ div {
     list-style: square;
   }
 }
+
+
