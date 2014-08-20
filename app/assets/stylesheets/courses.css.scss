@@ -13,6 +13,44 @@
   margin-bottom: 10px;
 }
 
+.student_selector{
+  border-style:solid;
+  border-color:#333;
+  //padding:5px;
+  margin: 5px;
+}
+
+.selected_student_name_class{
+  visibility: hidden;
+  font-weight: bold;
+  font-size: x-large;
+  color: black;
+  font-family: 'Nunito', sans-serif;
+}
+
+.selected_student_sid_class{
+  visibility: hidden;
+  font-size: large;
+  font-family: 'Nunito', sans-serif;
+}
+
+.selected_student_note_class{
+  visibility: hidden;
+  font-size: large;
+  font-family: 'Nunito', sans-serif;
+}
+
+.selector_button{
+  color: white;
+  font-weight: bold;
+}
+.student_selector_title{
+  margin: 0px;
+  text-align: left;
+  padding: 5px;
+  background-color:#333;
+  color:red
+}
 //Taken from pure
 //http://yui.yahooapis.com/pure/0.5.0/pure-min.css
 
@@ -24,7 +62,7 @@
   font-size: 100%;
   padding: .5em 1em;
   color: #444;
-  color: rgba(0,0,0,.8);
+  color: white;
   border: 1px solid #999;
   border: 0 rgba(0,0,0,0);
   background-color: #E6E6E6;

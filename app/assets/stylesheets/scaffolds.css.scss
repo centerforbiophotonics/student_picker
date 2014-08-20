@@ -31,6 +31,15 @@ a {
   }
 }
 
+.user_nav_class a {
+  color: white;
+  &:visited {
+    color: ghostwhite;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
+}
 div {
   &.field, &.actions {
     margin-bottom: 10px;

@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/rusanu/blockuijs-rails.git
+  revision: 56e727429fa876fa03eade459404c98d74bf32e8
+  specs:
+    blockuijs-rails (0.1.0)
+      rails (>= 3.1)
+
+GIT
   remote: git://github.com/rweng/jquery-datatables-rails.git
   revision: 49933cdd6ec1a56642400b0a040516556581bc9f
   specs:
@@ -153,6 +160,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  blockuijs-rails!
   coffee-rails (~> 4.0.0)
   devise
   jbuilder (~> 2.0)

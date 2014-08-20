@@ -27,8 +27,7 @@ body {
     margin: 10px;
 }
 
-.title{
-    text-align:center;
+.header{
     background-color:#333;
     color:white;
     padding:15px;
@@ -36,6 +35,13 @@ body {
     margin-top:10px;
 }
 
+.title_spot{
+    width: 50%;
+    margin: 0 auto; 
+    text-align:center;
+    font-family: 'Nunito', sans-serif;
+    font-size: x-large;
+}
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Nunito', sans-serif;
 }
@@ -49,7 +55,8 @@ a {
     text-align: left;
     padding: 5px;
     background-color:#333;
-    color:white
+    color:white;
+    position:relative;
 }
 
 .box_content {
@@ -57,4 +64,11 @@ a {
     background-color: #fff;
 }
 
+.user_nav_class{
+    position:absolute;
+    right: 8px;
+    top: 10px;
+    color:white;
+    z-index: 1;  
+}
 .

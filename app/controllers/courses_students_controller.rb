@@ -21,6 +21,15 @@ class CoursesStudentsController < ApplicationController
   def edit
   end
 
+  def update_note
+    courses_student = CoursesStudent.find(params[:id].to_i)
+    courses_student.note = params[:note]
+    courses_student.save!
+    respond_to do |format|
+      format.json{render :json => {:status => 'Note successfully saved', :note => courses_student.note}}
+    end
+  end
+
   # POST /courses_students
   # POST /courses_students.json
   def create

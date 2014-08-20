@@ -14,6 +14,7 @@ class UsersController < ApplicationController
   def show
 	#@user = User.joins(:courses).find(params[:id])
 	#@user.courses.build
+    @title = "Showing User: #{@user.name}" 
   end
 
   # GET /users/new

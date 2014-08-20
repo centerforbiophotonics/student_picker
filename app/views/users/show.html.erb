@@ -1,5 +1,7 @@
-<h2 class="title">Showing User: <%= @user.name %></h2>
-
+<!--h2 class="title">Showing User: <%= @user.name %></h2>-->
+<% content_for :title do %>
+Showing User: <%= @user.name %>
+<% end %>
 
 <% if @user.courses.count > 0 %>
   <strong><h3>Courses:</h3></strong>
@@ -12,7 +14,7 @@
           <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a><br>
           <ul id="student_list-<%=course.id%>" style="display:none">
               <% course.students.sort { |a,b| a.name <=> b.name }.each do |student| %>
-                <li><%= student.name %> | <%= link_to "Edit", edit_student_path(student.id)%></li>
+                <li><%= student.name %>&nbsp;&nbsp;SID:&nbsp;<%= student.sid %> | <%= link_to "Edit", edit_student_path(student.id)%></li>
               <% end %>
           </ul>
       </div>
