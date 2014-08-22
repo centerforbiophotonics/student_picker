@@ -65,9 +65,7 @@ a {
 }
 
 .user_nav_class{
-    position:absolute;
-    right: 8px;
-    top: 10px;
+    float:right;
     color:white;
     z-index: 1;  
 }

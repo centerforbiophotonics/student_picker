@@ -2,12 +2,12 @@
   Showing Course: <%= @course.name %>
 <% end %>
 
-<div class="student_selector">
+<div class="student_selector" id="ss">
 	<h4 class="student_selector_title"><a href="#" id="random_student_selector" style="color:white">Click to Select Student at Random</a></h4>
 
 	<div class="box_content">	
 		<div id="selected_student_name" class="selected_student_name_class"></div><br>
-		<div id="selected_student_sid" class="selected_student_sid_class"></div><br>
+		<div id="selected_student_sid" class="selected_student_sid_class"></div>
 		<div id="selected_student_note" class="selected_student_note_class"></div>
 
 		<div id="buttons" style="visibility:hidden;">
@@ -21,8 +21,8 @@
 	</div>
 </div>
 <div id="note_prompt" style="display:none; cursor: default">
-		<h1>Please enter a student note</h1>
-		<input type="text_area" id="note_left" />
+		<h2>Please enter a student note</h2>
+		<input type="text_area" id="note_left" /><br>
 		<input type="button" id="submit" value="Submit" />
 		<input type="button" id="cancel" value="Cancel" />
 </div>
@@ -121,22 +121,21 @@
 	  				$("#"+data["name"]+"_answer").html(data["value"])
 	  				console.log(data)
 	  				location.reload()
-	  				//$("#selected_student").css('visibility','hidden');
 	  			},
 	  			dataType: "json",
 	  			async: "false"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
 			if(window.location.search.substring(0,1) != "?")
 			{
-				window.location.href += "?"+(encodeURIComponent(last_student));
+				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
 			}
 			else
 			{
 				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student);
+				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
 			}
 		})
 		$("#absent").click(function(e){
@@ -153,15 +152,15 @@
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			if(window.location.search.substring(0,1) != "?")
 			{
-				window.location.href += "?"+(encodeURIComponent(last_student));
+				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
 			}
 			else
 			{
 				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student);
+				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
 			}	
 		})
 		$("#pass").click(function(e){
@@ -178,15 +177,15 @@
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student").innerHTML = "<strong>Page updating, please wait</strong>";
+			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			if(window.location.search.substring(0,1) != "?")
 			{
-				window.location.href += "?"+(encodeURIComponent(last_student));
+				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
 			}
 			else
 			{
 				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student);
+				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
 			}
 		})
 		//Figure out a way to update note w/o reload
