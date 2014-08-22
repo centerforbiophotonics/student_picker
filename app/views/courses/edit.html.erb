@@ -1,4 +1,6 @@
-<h2 class="title" >Editing Course: <%= @course.name %></h2>
+<% content_for :title do %>
+    Editing Course: <%= @course.name %>
+<% end %>
 
 <%= render 'form' %>
 

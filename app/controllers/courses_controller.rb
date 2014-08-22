@@ -92,6 +92,7 @@ class CoursesController < ApplicationController
 
   def answer
   	course = Course.find params[:id]
+    puts(params.inspect)
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first 
 
     courses_students.answered += 1
@@ -99,7 +100,7 @@ class CoursesController < ApplicationController
   	course.save!
     respond_to do |format|
   	    format.json do
-          render :json => {name: params[:student][:name], value: courses_students.answered }
+          render :json => {name: params[:student][:name], value: courses_students.answered, key: params[:key] }
         end
      end
   end
@@ -112,7 +113,7 @@ class CoursesController < ApplicationController
     course.save!
     respond_to do |format|
         format.json do
-          render :json => {name: params[:student][:name], value: courses_students.absent }
+          render :json => {name: params[:student][:name], value: courses_students.absent, key: params[:key]  }
         end
      end    
   end
@@ -126,7 +127,7 @@ class CoursesController < ApplicationController
     course.save!
     respond_to do |format|
         format.json do
-         render :json => {name: params[:student][:name], value: courses_students.passed} 
+         render :json => {name: params[:student][:name], value: courses_students.passed, key: params[:key] } 
        end
      end
   end

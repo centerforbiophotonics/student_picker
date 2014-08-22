@@ -68,4 +68,5 @@ a {
     float:right;
     color:white;
     z-index: 1;  
+    margin: -7px;
 }

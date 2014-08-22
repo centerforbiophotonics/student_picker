@@ -10,18 +10,19 @@
       </ul>
     </div>
   <% end %>
-
-  <div class="field">
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
+<div class="box_title">
+  <div class="box_content" style="color: black">
+    <div class="field">
+      <%= f.label :name %><br>
+      <%= f.text_field :name %>
+    </div>
+    <div class="field">
+      <%= f.label :sid %><br>
+      <%= f.number_field :sid %>
+    </div>
+    <div class="actions">
+      <%= f.submit %>
+    </div>
   </div>
-
-  <div class="field">
-    <%= f.label :sid %><br>
-    <%= f.number_field :sid %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+</div>
 <% end %>

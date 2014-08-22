@@ -20,6 +20,7 @@
 		<p id="last_student" style="visibility:visible;"></p>
 	</div>
 </div>
+<!--The following div just holds the blockUI prompt, only displays w\ "Note" is clicked -->
 <div id="note_prompt" style="display:none; cursor: default">
 		<h2>Please enter a student note</h2>
 		<input type="text_area" id="note_left" /><br>
@@ -113,6 +114,14 @@
 		$("#answer").click(function(e){
 			//console.log("test")
 			e.preventDefault();
+			var local_storage_key = new Date().getTime();
+			var course_id = <%= @course.id %>;
+			var value = {action: "answer",student: {id: student.id, name: student.name}, id: course_id};
+			localStorage.setItem(
+          		local_storage_key,
+          		JSON.stringify(value)
+        	);
+
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= answer_course_path(@course.id) %>",
@@ -120,6 +129,7 @@
 	  			success: function(data){
 	  				$("#"+data["name"]+"_answer").html(data["value"])
 	  				console.log(data)
+	  				localStorage.removeItem(data["key"]);
 	  				location.reload()
 	  			},
 	  			dataType: "json",
@@ -140,6 +150,13 @@
 		})
 		$("#absent").click(function(e){
 			e.preventDefault();
+			var local_storage_key = new Date().getTime();
+			var course_id = <%= @course.id %>;
+			var value = {action: "absent",student: {id: student.id, name: student.name}, id: course_id};
+			localStorage.setItem(
+          		local_storage_key,
+          		JSON.stringify(value)
+        	);
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= absent_course_path(@course.id) %>",
@@ -147,6 +164,7 @@
 	  			success: function(data){
 	  				$("#"+data["name"]+"_absent").html(data["value"])
 	  				console.log(data)
+	  				localStorage.removeItem(data["key"]);
 	  				location.reload()
 	  			},
 	  			dataType: "json"
@@ -165,6 +183,13 @@
 		})
 		$("#pass").click(function(e){
 			e.preventDefault();
+			var local_storage_key = new Date().getTime();
+			var course_id = <%= @course.id %>;
+			var value = {action: "pass",student: {id: student.id, name: student.name}, id: course_id};
+			localStorage.setItem(
+          		local_storage_key,
+          		JSON.stringify(value)
+        	);
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= pass_course_path(@course.id) %>",
@@ -172,6 +197,7 @@
 	  			success: function(data){
 	  				$("#"+data["name"]+"_pass").html(data["value"])
 	  				console.log(data)
+	  				localStorage.removeItem(data["key"]);
 	  				location.reload()
 	  			},
 	  			dataType: "json"

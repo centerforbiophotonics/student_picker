@@ -1,4 +1,6 @@
-<h2 class="title">Editing User: <%= @user.name%> </h2>
+<% content_for :title do %>
+    Editing User: <%= @user.name %>
+<% end %>
 
 <%= render 'form' %>
 
