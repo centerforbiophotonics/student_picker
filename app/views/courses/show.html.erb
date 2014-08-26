@@ -49,9 +49,9 @@
 	              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
 	              <% student_note_array[student.id] = {:note => student.courses_student.where(:courses_id => @course.id).first.note,
 	              		:id => student.courses_student.where(:courses_id => @course.id).first.id} %>
-	              <td id="<%=student.name%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
-	              <td id="<%=student.name%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
-	              <td id="<%=student.name%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
+	              <td id="<%=student.id%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
+	              <td id="<%=student.id%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
+	              <td id="<%=student.id%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
 	          </tr>
 	        <% end %>
 	        </tbody>
@@ -70,16 +70,17 @@
 	$(document).ready(function() {
 		var student = null;
 		var last_student;
+
 		//Change the text for last student based on the URL parameters, slice removes ? I think
-		$("#last_student").text(decodeURIComponent(window.location.search).slice(1));
+		//$("#last_student").text(decodeURIComponent(window.location.search).slice(1));
 		//If there isn't a last student yet, don't say last student
-		if(decodeURIComponent(window.location.search).slice(1) != "")
+		/*if(decodeURIComponent(window.location.search).slice(1) != "")
 		{
 			$("#last_text").css('visibility','visible');
-		}
+		}*/
 		function initTable()
 		{
-			oTable = $('#student_info').DataTable({
+			oTable = $('#student_info').dataTable({
 				"paging": false,
 				"scrollY": "400px",
 	        	"scrollCollapse": true,
@@ -127,16 +128,19 @@
 	  			url: "<%= answer_course_path(@course.id) %>",
 	  			data: {student:student},
 	  			success: function(data){
-	  				$("#"+data["name"]+"_answer").html(data["value"])
+	  				//$("#"+data["name"]+"_answer").html(data["value"])
 	  				console.log(data)
 	  				localStorage.removeItem(data["key"]);
-	  				location.reload()
+	  				console.log($("#"+data["id"]+"_answer"));
+	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_answer")[0]);
+	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
+	  				//location.reload()
 	  			},
 	  			dataType: "json",
 	  			async: "false"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
+			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
 			if(window.location.search.substring(0,1) != "?")
 			{
@@ -146,7 +150,7 @@
 			{
 				window.location.href -= window.location.search;
 				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
-			}
+			}*/
 		})
 		$("#absent").click(function(e){
 			e.preventDefault();
@@ -162,24 +166,13 @@
 	  			url: "<%= absent_course_path(@course.id) %>",
 	  			data: {student:student},
 	  			success: function(data){
-	  				$("#"+data["name"]+"_absent").html(data["value"])
-	  				console.log(data)
+	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_absent")[0]);
+	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
 	  				localStorage.removeItem(data["key"]);
-	  				location.reload()
 	  			},
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
-			if(window.location.search.substring(0,1) != "?")
-			{
-				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
-			}
-			else
-			{
-				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
-			}	
 		})
 		$("#pass").click(function(e){
 			e.preventDefault();
@@ -195,24 +188,14 @@
 	  			url: "<%= pass_course_path(@course.id) %>",
 	  			data: {student:student},
 	  			success: function(data){
-	  				$("#"+data["name"]+"_pass").html(data["value"])
+	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_pass")[0]);
+	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
 	  				console.log(data)
 	  				localStorage.removeItem(data["key"]);
-	  				location.reload()
 	  			},
 	  			dataType: "json"
 			});
 			$("#buttons").css('visibility','hidden');
-			document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
-			if(window.location.search.substring(0,1) != "?")
-			{
-				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
-			}
-			else
-			{
-				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
-			}
 		})
 		//Figure out a way to update note w/o reload
 		$("#note").click(function(e){
