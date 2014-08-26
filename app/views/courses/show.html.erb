@@ -1,3 +1,5 @@
+<!-- This is the actual student selector/student picker/cold caller code -->
+
 <% content_for :title do %>
   Showing Course: <%= @course.name %>
 <% end %>
@@ -70,7 +72,7 @@
 	$(document).ready(function() {
 		var student = null;
 		var last_student;
-
+		var connection_loss_note = false;
 		//Change the text for last student based on the URL parameters, slice removes ? I think
 		//$("#last_student").text(decodeURIComponent(window.location.search).slice(1));
 		//If there isn't a last student yet, don't say last student
@@ -113,7 +115,6 @@
 			$("#buttons").css('visibility','visible');
 		})
 		$("#answer").click(function(e){
-			//console.log("test")
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
 			var course_id = <%= @course.id %>;
@@ -126,18 +127,20 @@
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= answer_course_path(@course.id) %>",
-	  			data: {student:student},
+	  			data: {student:student, key:local_storage_key},
 	  			success: function(data){
-	  				//$("#"+data["name"]+"_answer").html(data["value"])
-	  				console.log(data)
-	  				localStorage.removeItem(data["key"]);
-	  				console.log($("#"+data["id"]+"_answer"));
+	  				console.log(data);
+	  				localStorage.removeItem(parseInt(data["key"]));
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_answer")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	  				//location.reload()
+	  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
 	  			},
 	  			dataType: "json",
-	  			async: "false"
+	  			async: "false",
+	  			error: function(XMLHttpRequest, textStatus, errorThrown)
+        		{
+        			connection_error_info(0);
+        		}
 			});
 			$("#buttons").css('visibility','hidden');
 			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
@@ -164,13 +167,18 @@
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= absent_course_path(@course.id) %>",
-	  			data: {student:student},
+	  			data: {student:student, key:local_storage_key},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_absent")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	  				localStorage.removeItem(data["key"]);
+	  				localStorage.removeItem(parseInt(data["key"]));
+	  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
 	  			},
-	  			dataType: "json"
+	  			dataType: "json",
+	  			error: function(XMLHttpRequest, textStatus, errorThrown)
+        		{
+        			connection_error_info(0);
+        		}
 			});
 			$("#buttons").css('visibility','hidden');
 		})
@@ -186,14 +194,19 @@
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= pass_course_path(@course.id) %>",
-	  			data: {student:student},
+	  			data: {student:student, key:local_storage_key},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_pass")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
 	  				console.log(data)
-	  				localStorage.removeItem(data["key"]);
+	  				localStorage.removeItem(parseInt(data["key"]));
+	  				connection_error_info(1);
 	  			},
-	  			dataType: "json"
+	  			dataType: "json",
+	  			error: function(XMLHttpRequest, textStatus, errorThrown)
+        		{
+        			connection_error_info(0);  //See if previous connection failed, let user know it's reestablished
+        		}
 			});
 			$("#buttons").css('visibility','hidden');
 		})
@@ -211,6 +224,7 @@
 	  			success: function(data){
 	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
 					$("#selected_student_note").text(" Note: " + data["note"]);
+					courses_student[current_student].note = data["note"];
 	  			},
 	  			dataType: "json"
 			});
@@ -219,6 +233,30 @@
 			$.unblockUI();
 			return false;
 		});
+		function connection_error_info(call_type)
+		{
+			if(call_type == 0) //Error call type, lost connection
+			{
+				if(!connection_loss_note)
+				{	
+	    			alert('The connection appears to be lost. Do not refresh the page, the application will work and update when the connection is reestablished');
+	    			connection_loss_note = true;
+	    		}
+		    	$("#flash").html("<strong><p class=\"flash-error\">Connection still not found</p></strong>");
+			}
+			else //Established connection, if was error on last call flash connection found
+			{
+				if(connection_loss_note)
+	  				{
+	  					connection_loss_note = false;
+	  					$("#flash").html("<strong><p class=\"flash-notice\">Connection established, records updated</p></strong>");	
+	  					location.reload(true);
+	  				}
+	  			else
+	  				$("#flash").html("");
+
+			}
+		}
 })
 	
 </script>

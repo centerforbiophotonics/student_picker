@@ -127,7 +127,7 @@ class CoursesController < ApplicationController
     course.save!
     respond_to do |format|
         format.json do
-         render :json => {name: params[:student][:id], value: courses_students.passed, key: params[:key] } 
+         render :json => {id: params[:student][:id], value: courses_students.passed, key: params[:key] } 
        end
      end
   end

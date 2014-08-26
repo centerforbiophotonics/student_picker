@@ -1,26 +1,31 @@
+var sync = null;
+
 $(function(){
-  $.each(localStorage, function(key, val){
-    var value = JSON.parse(val);
-    var url = "/courses/"+value.id+"/"+value.action+".json";
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: {
-        key: key,
-        action: value.action,
-        student: value.student,
-        id: value.id,
-      },
-      success: function(data, textStatus, jqXHR){
-        //console.log(data);
-        localStorage.removeItem(data["key"]);
-      },
-      dataType: "json",
-      error: function(){
+  sync = function()
+  {
+    $.each(localStorage, function(key, val){
+      var value = JSON.parse(val);
+      var url = "/courses/"+value.id+"/"+value.action+".json";
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          key: key,
+          action: value.action,
+          student: value.student,
+          id: value.id,
+        },
+        success: function(data, textStatus, jqXHR){
+          //console.log(data);
+          localStorage.removeItem(parseInt(data["key"]));
+        },
+        dataType: "json",
+        error: function(){
 
 
-      }
+        }
+      });
     });
-  });
+  }
 });
 
