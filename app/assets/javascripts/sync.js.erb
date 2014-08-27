@@ -16,7 +16,6 @@ $(function(){
           id: value.id,
         },
         success: function(data, textStatus, jqXHR){
-          //console.log(data);
           localStorage.removeItem(parseInt(data["key"]));
         },
         dataType: "json",

@@ -2,7 +2,6 @@ class CoursesController < ApplicationController
   require 'csv'
 
   def create #TODO: figure out what calls to save! are redundant
-    puts params.inspect
     @user = User.find(params[:user_id])
     @course = @user.courses.new
     @course.name = params[:course][:name]
@@ -35,7 +34,6 @@ class CoursesController < ApplicationController
   end
 
   def destroy
-    puts params.inspect
     @course = Course.find params[:id]
       @course.destroy
       respond_to do |format|
@@ -92,7 +90,6 @@ class CoursesController < ApplicationController
 
   def answer
   	course = Course.find params[:id]
-    puts(params.inspect)
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first 
 
     courses_students.answered += 1
@@ -119,7 +116,6 @@ class CoursesController < ApplicationController
   end
 
   def pass
-    puts params.inspect
     course = Course.find params[:id]
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
     courses_students.passed += 1
