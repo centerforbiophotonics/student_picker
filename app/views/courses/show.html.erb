@@ -107,13 +107,16 @@
 			$("#selected_student_name").text(student.name);
 			$("#selected_student_sid").text("("+student.SID+")");
 			$("#selected_student_note").text(""); //Make sure it starts blank
-			if(courses_student[current_student].note != null)
+			//Trim all space characters and see if there's anything in the note, don't display if just spaces
+			noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
+			if(courses_student[current_student].note != null && noteText != '' )
 			{
 				$("#selected_student_note").text("Note: " + courses_student[current_student].note);
+				$("#selected_student_note").css('visibility','visible');
 			}
+			else {$("#selected_student_note").css('visibility', 'hidden');}
 			$("#selected_student_name").css('visibility','visible');
 			$("#selected_student_sid").css('visibility','visible');
-			$("#selected_student_note").css('visibility','visible');
 			$("#buttons").css('visibility','visible');
 		})
 		$("#answer").click(function(e){
