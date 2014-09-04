@@ -108,7 +108,9 @@
 			$("#selected_student_sid").text("("+student.SID+")");
 			$("#selected_student_note").text(""); //Make sure it starts blank
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
-			noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
+			var noteText;
+			if(courses_student[current_student].note != null) 
+				noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
 			if(courses_student[current_student].note != null && noteText != '' )
 			{
 				$("#selected_student_note").text("Note: " + courses_student[current_student].note);
@@ -147,6 +149,7 @@
         		}
 			});
 			$("#buttons").css('visibility','hidden');
+			$("#last_student").text("Previous student: "+ student.name+ "("+student.id+")");
 			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
 			if(window.location.search.substring(0,1) != "?")
@@ -185,6 +188,7 @@
         		}
 			});
 			$("#buttons").css('visibility','hidden');
+			$("#last_student").text("Previous student: "+ student.name+ "("+student.id+")");
 		})
 		$("#pass").click(function(e){
 			e.preventDefault();
@@ -212,6 +216,7 @@
         		}
 			});
 			$("#buttons").css('visibility','hidden');
+			$("#last_student").text("Previous student: "+ student.name);
 		})
 		//Figure out a way to update note w/o reload
 		$("#note").click(function(e){
@@ -228,6 +233,8 @@
 	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
 					$("#selected_student_note").text(" Note: " + data["note"]);
 					courses_student[current_student].note = data["note"];
+					$("#selected_student_note").text("Note: " + courses_student[current_student].note);
+					$("#selected_student_note").css('visibility','visible');
 	  			},
 	  			dataType: "json"
 			});
@@ -253,7 +260,7 @@
 	  				{
 	  					connection_loss_note = false;
 	  					$("#flash").html("<strong><p class=\"flash-notice\">Connection established, records updated</p></strong>");	
-	  					location.reload(true);
+	  					sync();
 	  				}
 	  			else
 	  				$("#flash").html("");
