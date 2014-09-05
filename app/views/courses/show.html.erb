@@ -13,7 +13,8 @@
 		<div id="selected_student_note" class="selected_student_note_class"></div>
 
 		<div id="buttons" style="visibility:hidden;">
-		    <button type="button" id="answer" class="pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65); border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);">Answered</button>
+		    <button type="button" id="answer" class="pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>
+		    <!-- border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);-->
 		    <button type="button" id="pass" class="pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>
 		    <button type="button" id="absent" class="pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>
 		    <button type="button" id="note" class="pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>
@@ -64,7 +65,7 @@
 <%= link_to 'Edit Roster', edit_course_path %>
 <%= link_to 'User Page', user_path(@course.user_id) %>
 
-<!-- A whole series of button shenanigans, updates as needed and such -->
+<!-- A whole series of button/data shenanigans, updates as needed and such -->
 <script type="text/javascript">
 	var oTable = null;
 	var current_student;
@@ -73,13 +74,7 @@
 		var student = null;
 		var last_student;
 		var connection_loss_note = false;
-		//Change the text for last student based on the URL parameters, slice removes ? I think
-		//$("#last_student").text(decodeURIComponent(window.location.search).slice(1));
-		//If there isn't a last student yet, don't say last student
-		/*if(decodeURIComponent(window.location.search).slice(1) != "")
-		{
-			$("#last_text").css('visibility','visible');
-		}*/
+		//Sets up the datatable for student info
 		function initTable()
 		{
 			oTable = $('#student_info').dataTable({
@@ -89,15 +84,18 @@
 			});
 		}
 		initTable();
+
 		$.ajaxSetup({
   			headers: {
     			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
   			}
 		});
+		//Listener for expanding or hiding the student info datatable
 		$("#toggle_student_list").click(function(e){
 			e.preventDefault();
 			$("#student_list").slideToggle();
 		})
+		//Selecting student and displaying/not displaying relevant info
 		$("#random_student_selector").click(function(e){
 			e.preventDefault();
 			var student_list = <%= raw student_array.to_json %>;
@@ -109,14 +107,15 @@
 			$("#selected_student_note").text(""); //Make sure it starts blank
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
 			var noteText;
-			if(courses_student[current_student].note != null) 
+			if(courses_student[current_student].note != null) //Without this conditional shenanigans happen all over
 				noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
 			if(courses_student[current_student].note != null && noteText != '' )
 			{
 				$("#selected_student_note").text("Note: " + courses_student[current_student].note);
 				$("#selected_student_note").css('visibility','visible');
 			}
-			else {$("#selected_student_note").css('visibility', 'hidden');}
+			else {$("#selected_student_note").css('visibility', 'hidden');} //No note? Don't just say Note for no reason
+			//Show the divs with all the student info
 			$("#selected_student_name").css('visibility','visible');
 			$("#selected_student_sid").css('visibility','visible');
 			$("#buttons").css('visibility','visible');
@@ -148,8 +147,7 @@
         			connection_error_info(0);
         		}
 			});
-			$("#buttons").css('visibility','hidden');
-			$("#last_student").text("Previous student: "+ student.name+ "("+student.id+")");
+			display_update();
 			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
 			if(window.location.search.substring(0,1) != "?")
@@ -187,8 +185,7 @@
         			connection_error_info(0);
         		}
 			});
-			$("#buttons").css('visibility','hidden');
-			$("#last_student").text("Previous student: "+ student.name+ "("+student.id+")");
+			display_update();
 		})
 		$("#pass").click(function(e){
 			e.preventDefault();
@@ -215,8 +212,8 @@
         			connection_error_info(0);  //See if previous connection failed, let user know it's reestablished
         		}
 			});
-			$("#buttons").css('visibility','hidden');
-			$("#last_student").text("Previous student: "+ student.name);
+			display_update();
+			
 		})
 		//Figure out a way to update note w/o reload
 		$("#note").click(function(e){
@@ -243,6 +240,7 @@
 			$.unblockUI();
 			return false;
 		});
+		//Gets called whenever a submission of some sort occurs to check connection status, displays connections and syncs appropriately
 		function connection_error_info(call_type)
 		{
 			if(call_type == 0) //Error call type, lost connection
@@ -266,6 +264,12 @@
 	  				$("#flash").html("");
 
 			}
+		}
+		//Change necessary visibilities, set last student text appropriately
+		function display_update()
+		{
+			$("#buttons").css('visibility','hidden');
+			$("#last_student").text("Previous student: "+ student.name+ "("+student.SID+")");
 		}
 })
 	
