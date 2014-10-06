@@ -90,9 +90,14 @@ class CoursesController < ApplicationController
 
   def answer
   	course = Course.find params[:id]
-    courses_students = course.courses_students.where(:students_id => params[:student][:id]).first 
+    courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
 
     courses_students.answered += 1
+
+    courses_students.answered_dates.push(Date.parse(params[:date]))
+    courses_students.answered_dates_will_change!
+
+    #answered_dates
     courses_students.save! 
   	course.save!
     respond_to do |format|
@@ -105,7 +110,12 @@ class CoursesController < ApplicationController
   def absent
     course = Course.find params[:id]
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
+
     courses_students.absent += 1
+
+    courses_students.absent_dates.push(Date.parse(params[:date]))
+    courses_students.absent_dates_will_change!
+
     courses_students.save!
     course.save!
     respond_to do |format|
@@ -118,7 +128,12 @@ class CoursesController < ApplicationController
   def pass
     course = Course.find params[:id]
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
+
     courses_students.passed += 1
+
+    courses_students.passed_dates.push(Date.parse(params[:date]))
+    courses_students.passed_dates_will_change!
+
     courses_students.save!
     course.save!
     respond_to do |format|

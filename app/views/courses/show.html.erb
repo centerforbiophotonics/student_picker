@@ -50,8 +50,13 @@
 	          <tr>
 	              <td><%=student.name%></td>
 	              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
-	              <% student_note_array[student.id] = {:note => student.courses_student.where(:courses_id => @course.id).first.note,
-	              		:id => student.courses_student.where(:courses_id => @course.id).first.id} %>
+	              <% student_note_array[student.id] = {
+                  :note => student.courses_student.where(:courses_id => @course.id).first.note,
+                  :id => student.courses_student.where(:courses_id => @course.id).first.id ,
+                  :answered => student.courses_student.where(:courses_id => @course.id).first.answered
+                  }
+                %>
+
 	              <td id="<%=student.id%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
 	              <td id="<%=student.id%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
 	              <td id="<%=student.id%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
@@ -74,6 +79,9 @@
 		var student = null;
 		var last_student;
 		var connection_loss_note = false;
+
+    var absent_students = [];
+
 		//Sets up the datatable for student info
 		function initTable()
 		{
@@ -90,21 +98,49 @@
     			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
   			}
 		});
+
+
 		//Listener for expanding or hiding the student info datatable
 		$("#toggle_student_list").click(function(e){
 			e.preventDefault();
 			$("#student_list").slideToggle();
 		})
+
+
 		//Selecting student and displaying/not displaying relevant info
 		$("#random_student_selector").click(function(e){
 			e.preventDefault();
 			var student_list = <%= raw student_array.to_json %>;
-			student = student_list[Math.floor(Math.random()*student_list.length)];
+      var min_answered = 99;
+      var max_answered = 0;
+
+      student_list.forEach(function(s){
+        if (courses_student[s.id].answered < min_answered)
+          min_answered = courses_student[s.id].answered;
+
+        if (courses_student[s.id].answered > max_answered)
+          max_answered = courses_student[s.id].answered;
+      });
+
+      if (max_answered == min_answered){
+        student = student_list[Math.floor(Math.random()*student_list.length)];
+      } else {
+        var eligible_students = student_list.filter(function(s){
+          return courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
+        });
+
+        student = eligible_students[Math.floor(Math.random()*eligible_students.length)];
+      }
+
 			current_student = student.id;
 			last_student = student.name+" ("+student.SID+")";
-			$("#selected_student_name").text(student.name);
+
+      //Display randomly selected student
+      $("#selected_student_name").text(student.name);
 			$("#selected_student_sid").text("("+student.SID+")");
 			$("#selected_student_note").text(""); //Make sure it starts blank
+
+
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
 			var noteText;
 			if(courses_student[current_student].note != null) //Without this conditional shenanigans happen all over
@@ -115,25 +151,33 @@
 				$("#selected_student_note").css('visibility','visible');
 			}
 			else {$("#selected_student_note").css('visibility', 'hidden');} //No note? Don't just say Note for no reason
+
+
 			//Show the divs with all the student info
 			$("#selected_student_name").css('visibility','visible');
 			$("#selected_student_sid").css('visibility','visible');
 			$("#buttons").css('visibility','visible');
-		})
+		});
+
+
 		$("#answer").click(function(e){
 			e.preventDefault();
-			var local_storage_key = new Date().getTime();
+
+      var local_storage_key = new Date().getTime();
+      var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "answer",student: {id: student.id, name: student.name}, id: course_id};
+			var value = {action: "answer",student: {id: student.id, name: student.name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
         	);
 
+      courses_student[student.id].answered++;
+
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= answer_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key},
+	  			data: {student:student, key:local_storage_key, date: date},
 	  			success: function(data){
 	  				localStorage.removeItem(parseInt(data["key"]));
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_answer")[0]);
@@ -159,20 +203,26 @@
 				window.location.href -= window.location.search;
 				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
 			}*/
-		})
+		});
+
+
 		$("#absent").click(function(e){
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
+      var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "absent",student: {id: student.id, name: student.name}, id: course_id};
+			var value = {action: "absent",student: {id: student.id, name: student.name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
         	);
+
+      absent_students.push(student.id);
+
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= absent_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key},
+	  			data: {student:student, key:local_storage_key, date: date},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_absent")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
@@ -186,12 +236,15 @@
         		}
 			});
 			display_update();
-		})
+		});
+
+
 		$("#pass").click(function(e){
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
+      var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "pass",student: {id: student.id, name: student.name}, id: course_id};
+			var value = {action: "pass",student: {id: student.id, name: student.name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
@@ -199,7 +252,7 @@
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= pass_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key},
+	  			data: {student:student, key:local_storage_key, date: date},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_pass")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
@@ -214,7 +267,9 @@
 			});
 			display_update();
 			
-		})
+		});
+
+
 		//Figure out a way to update note w/o reload
 		$("#note").click(function(e){
 			$('#note_left').val(courses_student[current_student].note);
@@ -240,6 +295,8 @@
 			$.unblockUI();
 			return false;
 		});
+
+
 		//Gets called whenever a submission of some sort occurs to check connection status, displays connections and syncs appropriately
 		function connection_error_info(call_type)
 		{

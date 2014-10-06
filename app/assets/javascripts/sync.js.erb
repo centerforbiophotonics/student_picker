@@ -13,7 +13,8 @@ $(function(){
           key: key,
           action: value.action,
           student: value.student,
-          id: value.id,
+          date: value.date,
+          id: value.id
         },
         success: function(data, textStatus, jqXHR){
           localStorage.removeItem(parseInt(data["key"]));

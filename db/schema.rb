@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140807173640) do
+ActiveRecord::Schema.define(version: 20141003193919) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "courses", force: true do |t|
     t.string   "name"
@@ -20,21 +23,34 @@ ActiveRecord::Schema.define(version: 20140807173640) do
     t.datetime "updated_at"
   end
 
-  add_index "courses", ["user_id"], name: "index_courses_on_user_id"
+  add_index "courses", ["user_id"], name: "index_courses_on_user_id", using: :btree
 
   create_table "courses_students", force: true do |t|
     t.integer  "courses_id"
     t.integer  "students_id"
-    t.integer  "answered",    default: 0
-    t.integer  "passed",      default: 0
-    t.integer  "absent",      default: 0
+    t.integer  "answered",       default: 0
+    t.integer  "passed",         default: 0
+    t.integer  "absent",         default: 0
     t.string   "note"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.date     "answered_dates", default: [], array: true
+    t.date     "passed_dates",   default: [], array: true
+    t.date     "absent_dates",   default: [], array: true
+  end
+
+  add_index "courses_students", ["courses_id"], name: "index_courses_students_on_courses_id", using: :btree
+  add_index "courses_students", ["students_id"], name: "index_courses_students_on_students_id", using: :btree
+
+  create_table "sessions", force: true do |t|
+    t.string   "session_id", null: false
+    t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "courses_students", ["courses_id"], name: "index_courses_students_on_courses_id"
-  add_index "courses_students", ["students_id"], name: "index_courses_students_on_students_id"
+  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true, using: :btree
+  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "students", force: true do |t|
     t.string   "name"
@@ -60,7 +76,7 @@ ActiveRecord::Schema.define(version: 20140807173640) do
     t.boolean  "admin",                  default: false, null: false
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
 end
