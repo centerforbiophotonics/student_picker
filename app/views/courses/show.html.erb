@@ -5,7 +5,7 @@
 <% end %>
 
 <div>
-    <audio loop src="/assets/3sec.mp3" id="nosleep-audio"></audio>
+    <audio controls loop src="/assets/3sec.mp3" id="nosleep-audio"></audio>
 </div>
 
 <div class="student_selector" id="ss">
@@ -137,6 +137,9 @@
 
         student = eligible_students[Math.floor(Math.random()*eligible_students.length)];
       }
+
+      console.log(student);
+      console.log()
 
 			current_student = student.id;
 			last_student = student.name+" ("+student.SID+")";
