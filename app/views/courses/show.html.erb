@@ -4,6 +4,10 @@
   Showing Course: <%= @course.name %>
 <% end %>
 
+<div>
+    <audio loop src="/assets/3sec.mp3" id="nosleep-audio"></audio>
+</div>
+
 <div class="student_selector" id="ss">
 	<h4 class="student_selector_title"><a href="#" id="random_student_selector" style="color:white">Click to Select Student at Random</a></h4>
 
@@ -88,10 +92,12 @@
 			oTable = $('#student_info').dataTable({
 				"paging": false,
 				"scrollY": "400px",
-	        	"scrollCollapse": true,
+        "scrollCollapse": true
 			});
 		}
 		initTable();
+
+    document.getElementById('nosleep-audio').play();
 
 		$.ajaxSetup({
   			headers: {
