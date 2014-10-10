@@ -50,6 +50,7 @@ class CoursesController < ApplicationController
 	  @course = Course.find(params[:id])
     @course.name = params[:course][:name]
     @course.save!
+
     #Add new students or update existing students if found in the roster
     sid_array = []
     CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|

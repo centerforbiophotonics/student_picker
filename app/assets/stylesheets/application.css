@@ -13,6 +13,7 @@
  *= require_tree .
  *= require dataTables/jquery.dataTables
  *= require_self
+ *= require jquery.mobile
  */
  
  .flash-error{
