@@ -13,7 +13,6 @@
  *= require_tree .
  *= require dataTables/jquery.dataTables
  *= require_self
- *= require jquery.mobile
  */
  
  .flash-error{
@@ -49,6 +48,14 @@ h1, h2, h3, h4, h5, h6 {
 
 a {
     font-family: 'Nunito', sans-serif;
+}
+
+.ui-page-theme-a {
+    text-shadow: none !important;
+}
+
+.ui-btn{
+    text-shadow: none !important;
 }
 
 .box_title {

@@ -34,7 +34,7 @@
 <% student_array = Array.new %>
 <% student_note_array = {} %>
 <a href="#" id="toggle_student_list">Toggle Student List</a><br>
-<div id= "student_list" style="float:left; display:none" class="student_selector">
+<div id= "student_list" style="display:none" class="student_selector">
     <div class="box_content">
     	<%= link_to "Download as CSV", :controller => :courses, :action => :show, :format => :csv %>
 	    <table id="student_info" class="display" cellspacing="0" width="30%" text-align="center">

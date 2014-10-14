@@ -5,8 +5,9 @@ class CoursesController < ApplicationController
     @user = User.find(params[:user_id])
     @course = @user.courses.new
     @course.name = params[:course][:name]
-    @course.save!
+    success = @course.save
 
+    
     if(params[:course][:student_list].present?)
       CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
         unless row["Name"].blank?
@@ -19,9 +20,19 @@ class CoursesController < ApplicationController
         end
       end
     end
-    @course.save!
-    @user.save!
-    redirect_to user_path(@user)
+
+    respond_to do |format|
+      if success
+        puts "SUCCESSFUL SAVE"
+        @user.save! 
+        format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
+        format.html { redirect_to @course.user }
+      else
+        puts "SAVE FAILED"
+        format.html { render :partial  => "form", :status => :unprocessable_entity } 
+        format.json { render :json => @course.errors, :status => :unprocessable_entity}           
+      end      
+    end 
 	end
   
   def show
@@ -47,46 +58,52 @@ class CoursesController < ApplicationController
   end
   
   def update
-	  @course = Course.find(params[:id])
+    @course = Course.find(params[:id])
     @course.name = params[:course][:name]
-    @course.save!
+    #@course.save!
 
     #Add new students or update existing students if found in the roster
-    sid_array = []
-    CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
-      unless row["Name"].blank?
-        sid_array << row["User ID"].to_i
-        student = Student.where(:sid => row["User ID"]).first
+    if(params[:course][:student_list].present?)
+      sid_array = []
+      CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
+        unless row["Name"].blank?
+         sid_array << row["User ID"].to_i
+         student = Student.where(:sid => row["User ID"]).first
 
-        if(!student.present?)
-         student = Student.new
+          if(!student.present?)
+           student = Student.new
+          end
+
+          student.name = row["Name"]
+          student.sid = row["User ID"] 
+          student.save!
+
+          unless CoursesStudent.
+                  where(:courses_id => @course.id).
+                  where(:students_id => student.id).exists?
+            courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
+            courses_student.save!
+          end
         end
-
-        student.name = row["Name"]
-        student.sid = row["User ID"] 
-        student.save!
-
-        unless CoursesStudent.
-                where(:courses_id => @course.id).
-                where(:students_id => student.id).exists?
-          courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
-          courses_student.save!
-        end
+        #Destroy students who are not present in the new roster
+        Student.
+          joins(:courses_student).
+          where("courses_id = #{@course.id}").
+          where("sid not in (#{sid_array.to_s.gsub('[','').gsub(']','')})").
+          destroy_all
       end
-    end
-
-    #Destroy students who are not present in the new roster
-    Student.
-      joins(:courses_student).
-      where("courses_id = #{@course.id}").
-      where("sid not in (#{sid_array.to_s.gsub('[','').gsub(']','')})").
-      destroy_all
-
+    end  
     respond_to do |format|
-      format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
-      format.html { redirect_to @course.user }
-      #format.json { head :no_content }
-    end
+      if @course.save
+        flash[:notice] = "#{@course.name} has been successfully updated"
+        format.js { render :js => "window.location.href='"+user_path(@course.user_id)+"'"}
+        format.html { redirect_to @course.user }
+        #format.json { head :no_content }
+      else  
+        format.html { render :edit } 
+        format.json { render :json => @course.errors, :status => :unprocessable_entity} 
+      end
+    end  
   end
 
   def answer

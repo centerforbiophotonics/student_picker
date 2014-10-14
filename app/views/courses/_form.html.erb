@@ -40,4 +40,12 @@
           $("#course_submit_button").prop('disabled', true);
         })
     })
+    $(document).ajaxComplete(function(event, jqXHR, ajaxOptions){
+      if (jqXHR.status != 200){
+        //Replace the form html with form html from server with the validation errors and styling on the fields
+        try{
+          replace_new_course_form(jqXHR.responseText);
+        } catch(err){}    
+      }  
+    });
   </script>
