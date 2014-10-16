@@ -15,7 +15,7 @@ development:
   encoding: unicode
   pool: 5
   database: student_picker
-  host: ""#localhost
+  host: "localhost"
 #
 #development:
 #  <<: *default

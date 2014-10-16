@@ -9,8 +9,50 @@
   font-size: 20px;
 }
 
+.select_n_at_random{
+  font-size: 18px;
+  display: inline;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 #buttons {
   margin-bottom: 10px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+#answer {
+  height: 80px;
+  width: 160px;
+  display: inline; 
+}
+
+#pass{
+  height: 80px;
+  width: 160px;
+  display: inline;
+}
+
+#absent {
+  height: 80px;
+  width: 160px;
+  display: inline;
+}
+
+#note {
+  height: 80px;
+  width: 160px;
+  display: inline;
+}
+
+#student_input{
+  visibility: hidden;
+  border-style: solid;
+  border-color: #333;
+  position: relative;
+  padding-bottom: 10px;
+  padding-left: 5px;
 }
 
 .student_selector{
@@ -18,6 +60,7 @@
   border-color:#333;
   //padding:5px;
   margin: 5px;
+  padding-bottom: 10px;  
 }
 
 .selected_student_name_class{
@@ -26,6 +69,8 @@
   font-size: x-large;
   color: black;
   font-family: 'Nunito', sans-serif;
+  position: absolute;
+  top: 30%;
 }
 
 .selected_student_sid_class{
@@ -38,6 +83,10 @@
   visibility: hidden;
   font-size: large;
   font-family: 'Nunito', sans-serif;
+  position: absolute;
+  top: 45%;
+  word-wrap: break-word;
+  width: 43%;
 }
 
 .selector_button{

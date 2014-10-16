@@ -6,22 +6,30 @@
 
 
 <div class="student_selector" id="ss">
-	<h4 class="student_selector_title"><a href="#" id="random_student_selector" style="color:white">Click to Select Student at Random</a></h4>
+	<h4 class="student_selector_title">
+		<!--<a href="#" id="random_student_selector" style="color:white">Click to Select Student at Random</a>-->
+		<p class="select_n_at_random" style="color:white">  Select n students at random: </p>
+		<a href="#" id="select_1" class="select_n_at_random" style="color:white">1</a>
+		<a href="#" id="select_10" class="select_n_at_random" style="color:white">10</a>
+		<a href="#" id="select_25" class="select_n_at_random" style="color:white">25</a>
+		<a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
+	</h4>
 
 	<div class="box_content">	
-		<div id="selected_student_name" class="selected_student_name_class"></div><br>
-		<div id="selected_student_sid" class="selected_student_sid_class"></div>
-		<div id="selected_student_note" class="selected_student_note_class"></div>
-
-		<div id="buttons" style="visibility:hidden;">
-		    <button type="button" id="answer" class="pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>
-		    <!-- border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);-->
-		    <button type="button" id="pass" class="pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>
-		    <button type="button" id="absent" class="pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>
-		    <button type="button" id="note" class="pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>
-		</div>
-		<h3 style="visibility:hidden;" id="last_text"><strong>Last student selected: </strong></h3>
-		<p id="last_student" style="visibility:visible;"></p>
+		<div id="student_input">
+			<div id="selected_student_name" class="selected_student_name_class"></div><br>
+			<!--<div id="selected_student_sid" class="selected_student_sid_class"></div>-->
+			<div id="buttons" style="visibility:hidden;">
+			    <button type="button" id="answer" class="btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>
+			    <!-- border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);-->
+			    <button type="button" id="pass" class="btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>
+			    <button type="button" id="absent" class="btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>
+			    <button type="button" id="note" class="btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>
+			</div>
+			<div id="selected_student_note" class="selected_student_note_class"></div>
+			<!--<h3 style="visibility:hidden;" id="last_text"><strong>Last student selected: </strong></h3>
+			<p id="last_student" style="visibility:visible;"></p>-->
+		</div>	
 	</div>
 </div>
 <!--The following div just holds the blockUI prompt, only displays w\ "Note" is clicked -->
@@ -109,11 +117,13 @@
 
 
 		//Selecting student and displaying/not displaying relevant info
-		$("#random_student_selector").click(function(e){
+		$(".select_n_at_random").click(function(e){
 			e.preventDefault();
 			var student_list = <%= raw student_array.to_json %>;
       var min_answered = 99;
       var max_answered = 0;
+      var n;
+
 
       student_list.forEach(function(s){
         if (courses_student[s.id].answered < min_answered)
@@ -140,8 +150,8 @@
 			last_student = student.name+" ("+student.SID+")";
 
       //Display randomly selected student
-      $("#selected_student_name").text(student.name);
-			$("#selected_student_sid").text("("+student.SID+")");
+      $("#selected_student_name").text(student.name+" ("+student.SID+")");
+			//$("#selected_student_sid").text("("+student.SID+")");
 			$("#selected_student_note").text(""); //Make sure it starts blank
 
 
@@ -161,6 +171,7 @@
 			$("#selected_student_name").css('visibility','visible');
 			$("#selected_student_sid").css('visibility','visible');
 			$("#buttons").css('visibility','visible');
+			$("#student_input").css('visibility', 'visible');
 		});
 
 
