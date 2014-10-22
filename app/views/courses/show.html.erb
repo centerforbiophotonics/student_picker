@@ -16,20 +16,16 @@
 	</h4>
 
 	<div class="box_content">	
-		<div id="student_input">
+		<!--<div id="student_input">
 			<div id="selected_student_name" class="selected_student_name_class"></div><br>
-			<!--<div id="selected_student_sid" class="selected_student_sid_class"></div>-->
 			<div id="buttons" style="visibility:hidden;">
 			    <button type="button" id="answer" class="btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>
-			    <!-- border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);-->
 			    <button type="button" id="pass" class="btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>
 			    <button type="button" id="absent" class="btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>
 			    <button type="button" id="note" class="btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>
 			</div>
 			<div id="selected_student_note" class="selected_student_note_class"></div>
-			<!--<h3 style="visibility:hidden;" id="last_text"><strong>Last student selected: </strong></h3>
-			<p id="last_student" style="visibility:visible;"></p>-->
-		</div>	
+		</div>	-->
 	</div>
 </div>
 <!--The following div just holds the blockUI prompt, only displays w\ "Note" is clicked -->
@@ -119,41 +115,67 @@
 		//Selecting student and displaying/not displaying relevant info
 		$(".select_n_at_random").click(function(e){
 			e.preventDefault();
-			var student_list = <%= raw student_array.to_json %>;
-      var min_answered = 99;
-      var max_answered = 0;
-      var n;
-
-
-      student_list.forEach(function(s){
-        if (courses_student[s.id].answered < min_answered)
-          min_answered = courses_student[s.id].answered;
-
-        if (courses_student[s.id].answered > max_answered)
-          max_answered = courses_student[s.id].answered;
-      });
-
-      if (max_answered == min_answered){
-        student = student_list[Math.floor(Math.random()*student_list.length)];
-      } else {
-        var eligible_students = student_list.filter(function(s){
-          return courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
+		     
+		    if($(this).attr("id") == 'select_1')
+		    	show_n_students(1);
+		    else if($(this).attr("id") == 'select_10')
+		    	show_n_students(10);
+		    else if($(this).attr("id") == 'select_25')
+		    	show_n_students(25);
+		    else if($(this).attr("id") == 'select_50')
+		    	show_n_students(50);	  
         });
 
-        student = eligible_students[Math.floor(Math.random()*eligible_students.length)];
-      }
+        function show_n_students(n){
+			var student_list = <%= raw student_array.to_json %>;
+		    var min_answered = 99;
+		    var max_answered = 0;
+		    var listed_students = [];
 
-      console.log(student);
-      console.log()
+		    if(n > student_list.length){
+		    	n = student_list.length
+		    }
+		    console.log(n);
+            
+		      student_list.forEach(function(s){//find min_answered and max_answered
+		        if (courses_student[s.id].answered < min_answered)
+		          min_answered = courses_student[s.id].answered;
 
-			current_student = student.id;
-			last_student = student.name+" ("+student.SID+")";
+		        if (courses_student[s.id].answered > max_answered)
+		          max_answered = courses_student[s.id].answered;
+		      });
+
+		      if (max_answered == min_answered){//if all have same number answered, choose randomly
+		      	select_students(student_list,listed_students,n);
+
+		      } else {
+		        var eligible_students = student_list.filter(function(s){
+		          return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
+		        });
+		        select_students(eligible_students,listed_students,n);
+		        console.log(n);
+		        console.log(listed_students.length);
+		        if(listed_students.length != n){
+		        	var next_students = student_list.filter(function(s){
+		          	return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered == max_answered && absent_students.indexOf(s.id) == -1;
+		        	});
+		        	select_students(next_students,listed_students,n);
+		        }
+		      };//else  
+		    
+		      //console.log(student);
+		      //console.log()
+
+			//current_student = student.id;
+			//last_student = student.name+" ("+student.SID+")";
+			for(var i = 0; i < listed_students.length;i++){
+				console.log(listed_students[i]);
+			}
 
       //Display randomly selected student
-      $("#selected_student_name").text(student.name+" ("+student.SID+")");
+      $("#selected_student_name_"+current_student).text(student.name+" ("+student.SID+")");
 			//$("#selected_student_sid").text("("+student.SID+")");
-			$("#selected_student_note").text(""); //Make sure it starts blank
-
+			$("#selected_student_note_"+current_student).text(""); //Make sure it starts blank
 
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
 			var noteText;
@@ -161,25 +183,59 @@
 				noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
 			if(courses_student[current_student].note != null && noteText != '' )
 			{
-				$("#selected_student_note").text("Note: " + courses_student[current_student].note);
-				$("#selected_student_note").css('visibility','visible');
+				$("#selected_student_note_"+student.id).text("Note: " + courses_student[current_student].note);
+				$("#selected_student_note_"+student.id).css('visibility','visible');
 			}
-			else {$("#selected_student_note").css('visibility', 'hidden');} //No note? Don't just say Note for no reason
+			else {$("#selected_student_note_"+student.id).css('visibility', 'hidden');} //No note? Don't just say Note for no reason
 
 
 			//Show the divs with all the student info
-			$("#selected_student_name").css('visibility','visible');
-			$("#selected_student_sid").css('visibility','visible');
-			$("#buttons").css('visibility','visible');
-			$("#student_input").css('visibility', 'visible');
-		});
+			$("#selected_student_name_"+student.id).css('visibility','visible');
+			//$("#selected_student_sid").css('visibility','visible');
+			$("#buttons_"+student.id).css('visibility','visible');
+			$("#student_input_"+student.id).css('visibility', 'visible');
+
+			return;
+		  
+		};
 
 
-		$("#answer").click(function(e){
+		function select_students(eligible_students, listed_students,n){
+			var j, k = listed_students.length + eligible_students.length;
+			var bucket = [];
+			for(var i = 0; i < eligible_students.length;i++){
+	        	bucket.push(i);
+		    };
+		    for(var i = listed_students.length;i < n && i < k;i++){
+		        j = Math.floor(Math.random()*bucket.length);		        		
+		        listed_students[i] = eligible_students[bucket[j]];
+		        student = listed_students[i];
+		        current_student = student.id;
+		        display_student();
+		        bucket.splice(j,1);
+		      }  
+		}
+
+		function display_student(){
+			$("#box_content").append(
+			  '<div id="student_input_'+current_student+'" class="student_input">'+
+				'<div id="selected_student_name_'+current_student+'" class="selected_student_name_class"></div><br>'+
+				'<div id="buttons_'+current_student+'" style="visibility:hidden;">'+
+					'<button type="button" id="answer_'+current_student+'" class="answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
+					'<button type="button" id="pass_'+current_student+'" class="pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
+					'<button type="button" id="absent_'+current_student+'" class="absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
+					'<button type="button" id="note_'+current_student+'" class="note btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>'+
+				'</div>'+
+				'<div id="selected_student_note_'+current_student+'" class="selected_student_note_class"></div>'+
+			  '</div>'	
+			);
+		}
+
+		$(".answer").click(function(e){
 			e.preventDefault();
 
-      var local_storage_key = new Date().getTime();
-      var date = new Date().toDateString();
+      		var local_storage_key = new Date().getTime();
+      		var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
 			var value = {action: "answer",student: {id: student.id, name: student.name}, id: course_id, date: date};
 			localStorage.setItem(
@@ -221,7 +277,7 @@
 		});
 
 
-		$("#absent").click(function(e){
+		$(".absent").click(function(e){
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
       var date = new Date().toDateString();
@@ -254,10 +310,10 @@
 		});
 
 
-		$("#pass").click(function(e){
+		$(".pass").click(function(e){
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
-      var date = new Date().toDateString();
+      		var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
 			var value = {action: "pass",student: {id: student.id, name: student.name}, id: course_id, date: date};
 			localStorage.setItem(
@@ -286,7 +342,7 @@
 
 
 		//Figure out a way to update note w/o reload
-		$("#note").click(function(e){
+		$(".note").click(function(e){
 			$('#note_left').val(courses_student[current_student].note);
 			$.blockUI({message: $('#note_prompt'), css: {width: '275px'}})
 		})
@@ -298,10 +354,10 @@
 	  			data: {note:$("#note_left").val()},
 	  			success: function(data){
 	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
-					$("#selected_student_note").text(" Note: " + data["note"]);
+					$("#selected_student_note_"+current_student).text(" Note: " + data["note"]);
 					courses_student[current_student].note = data["note"];
-					$("#selected_student_note").text("Note: " + courses_student[current_student].note);
-					$("#selected_student_note").css('visibility','visible');
+					$("#selected_student_note_"+current_student).text("Note: " + courses_student[current_student].note);
+					$("#selected_student_note_"+current_student).css('visibility','visible');
 	  			},
 	  			dataType: "json"
 			});
@@ -340,8 +396,8 @@
 		//Change necessary visibilities, set last student text appropriately
 		function display_update()
 		{
-			$("#buttons").css('visibility','hidden');
-			$("#last_student").text("Previous student: "+ student.name+ "("+student.SID+")");
+			$("#buttons_"+current_student).css('visibility','hidden');
+			//$("#last_student").text("Previous student: "+ student.name+ "("+student.SID+")");
 		}
 })
 	
