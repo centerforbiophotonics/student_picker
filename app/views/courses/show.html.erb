@@ -15,7 +15,7 @@
 		<a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
 	</h4>
 
-	<div class="box_content">	
+	<div id="students_box" class="box_content">	
 		<!--<div id="student_input">
 			<div id="selected_student_name" class="selected_student_name_class"></div><br>
 			<div id="buttons" style="visibility:hidden;">
@@ -135,7 +135,6 @@
 		    if(n > student_list.length){
 		    	n = student_list.length
 		    }
-		    console.log(n);
             
 		      student_list.forEach(function(s){//find min_answered and max_answered
 		        if (courses_student[s.id].answered < min_answered)
@@ -153,8 +152,6 @@
 		          return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
 		        });
 		        select_students(eligible_students,listed_students,n);
-		        console.log(n);
-		        console.log(listed_students.length);
 		        if(listed_students.length != n){
 		        	var next_students = student_list.filter(function(s){
 		          	return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered == max_answered && absent_students.indexOf(s.id) == -1;
@@ -162,19 +159,11 @@
 		        	select_students(next_students,listed_students,n);
 		        }
 		      };//else  
-		    
-		      //console.log(student);
-		      //console.log()
+		};
 
-			//current_student = student.id;
-			//last_student = student.name+" ("+student.SID+")";
-			for(var i = 0; i < listed_students.length;i++){
-				console.log(listed_students[i]);
-			}
-
-      //Display randomly selected student
-      $("#selected_student_name_"+current_student).text(student.name+" ("+student.SID+")");
-			//$("#selected_student_sid").text("("+student.SID+")");
+		function show_student_info(){
+			 //Display randomly selected student
+      		$("#selected_student_name_"+current_student).text(student.name+" ("+student.SID+")");
 			$("#selected_student_note_"+current_student).text(""); //Make sure it starts blank
 
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
@@ -188,17 +177,7 @@
 			}
 			else {$("#selected_student_note_"+student.id).css('visibility', 'hidden');} //No note? Don't just say Note for no reason
 
-
-			//Show the divs with all the student info
-			$("#selected_student_name_"+student.id).css('visibility','visible');
-			//$("#selected_student_sid").css('visibility','visible');
-			$("#buttons_"+student.id).css('visibility','visible');
-			$("#student_input_"+student.id).css('visibility', 'visible');
-
-			return;
-		  
-		};
-
+		}
 
 		function select_students(eligible_students, listed_students,n){
 			var j, k = listed_students.length + eligible_students.length;
@@ -217,10 +196,10 @@
 		}
 
 		function display_student(){
-			$("#box_content").append(
+			$("#students_box").append(
 			  '<div id="student_input_'+current_student+'" class="student_input">'+
 				'<div id="selected_student_name_'+current_student+'" class="selected_student_name_class"></div><br>'+
-				'<div id="buttons_'+current_student+'" style="visibility:hidden;">'+
+				'<div id="buttons_'+current_student+'" class="buttons">'+
 					'<button type="button" id="answer_'+current_student+'" class="answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
 					'<button type="button" id="pass_'+current_student+'" class="pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
 					'<button type="button" id="absent_'+current_student+'" class="absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
@@ -229,26 +208,34 @@
 				'<div id="selected_student_note_'+current_student+'" class="selected_student_note_class"></div>'+
 			  '</div>'	
 			);
+			var this_answer = "#answer_" + current_student.toString();
+			$(this_answer).on("click", {id: this_answer}, handle_answer);
+			show_student_info();
 		}
 
-		$(".answer").click(function(e){
+		function handle_answer(e){
+		//$(".answer").click(function(e){			
 			e.preventDefault();
+			console.log(e);
 
       		var local_storage_key = new Date().getTime();
       		var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "answer",student: {id: student.id, name: student.name}, id: course_id, date: date};
+			var current_id = parseInt(((e.data.id).split("_"))[1]);//get student's id from after the "_"
+			console.log(e.data.id);
+			console.log(current_id);
+			var value = {action: "answer",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
         	);
 
-      courses_student[student.id].answered++;
-
+      		courses_student[current_id].answered++;
+      		console.log(courses_student[current_id]);
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= answer_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key, date: date},
+	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
 	  			success: function(data){
 	  				localStorage.removeItem(parseInt(data["key"]));
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_answer")[0]);
@@ -262,7 +249,7 @@
         			connection_error_info(0);
         		}
 			});
-			display_update();
+			//display_update();
 			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
 			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
 			if(window.location.search.substring(0,1) != "?")
@@ -274,26 +261,27 @@
 				window.location.href -= window.location.search;
 				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
 			}*/
-		});
+		}//);
 
 
 		$(".absent").click(function(e){
 			e.preventDefault();
 			var local_storage_key = new Date().getTime();
-      var date = new Date().toDateString();
+      		var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "absent",student: {id: student.id, name: student.name}, id: course_id, date: date};
+			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
+			var value = {action: "absent",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
         	);
 
-      absent_students.push(student.id);
+      		absent_students.push(current_id);
 
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= absent_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key, date: date},
+	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_absent")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
@@ -306,7 +294,7 @@
         			connection_error_info(0);
         		}
 			});
-			display_update();
+			//display_update();
 		});
 
 
@@ -315,7 +303,8 @@
 			var local_storage_key = new Date().getTime();
       		var date = new Date().toDateString();
 			var course_id = <%= @course.id %>;
-			var value = {action: "pass",student: {id: student.id, name: student.name}, id: course_id, date: date};
+			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
+			var value = {action: "pass",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
 			localStorage.setItem(
           		local_storage_key,
           		JSON.stringify(value)
@@ -323,7 +312,7 @@
 			$.ajax({
 	  			type: "POST",
 	  			url: "<%= pass_course_path(@course.id) %>",
-	  			data: {student:student, key:local_storage_key, date: date},
+	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
 	  			success: function(data){
 	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_pass")[0]);
 	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
@@ -336,28 +325,30 @@
         			connection_error_info(0);  //See if previous connection failed, let user know it's reestablished
         		}
 			});
-			display_update();
+			//display_update();
 			
 		});
 
 
 		//Figure out a way to update note w/o reload
 		$(".note").click(function(e){
-			$('#note_left').val(courses_student[current_student].note);
+			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
+			$('#note_left').val(courses_student[current_id].note);
 			$.blockUI({message: $('#note_prompt'), css: {width: '275px'}})
 		})
 		$("#submit").click(function(e){
 			$.unblockUI();
+			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
 			$.ajax({
 	  			type: "POST",
-	  			url: "/courses_students/"+courses_student[current_student].id+"/update_note.json",
+	  			url: "/courses_students/"+courses_student[current_id].id+"/update_note.json",
 	  			data: {note:$("#note_left").val()},
 	  			success: function(data){
 	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
-					$("#selected_student_note_"+current_student).text(" Note: " + data["note"]);
-					courses_student[current_student].note = data["note"];
-					$("#selected_student_note_"+current_student).text("Note: " + courses_student[current_student].note);
-					$("#selected_student_note_"+current_student).css('visibility','visible');
+					$("#selected_student_note_"+current_id).text(" Note: " + data["note"]);
+					courses_student[current_id].note = data["note"];
+					$("#selected_student_note_"+current_id).text("Note: " + courses_student[current_id].note);
+					$("#selected_student_note_"+current_id).css('visibility','visible');
 	  			},
 	  			dataType: "json"
 			});

@@ -108,6 +108,7 @@ class CoursesController < ApplicationController
 
   def answer
   	course = Course.find params[:id]
+    puts course.courses_students.inspect
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
 
     courses_students.answered += 1
