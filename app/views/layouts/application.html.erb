@@ -12,6 +12,7 @@
 <body>
 
 <div class="header">
+    <div class="title_spot"><%= yield :title %></div>
     <div id="user_nav" class="user_nav_class">
         <% if user_signed_in? %>
             Signed in as <%= current_user.email %>&nbsp;<br>
@@ -22,7 +23,6 @@
             <% end %>
         <% end %>
     </div>
-    <div class="title_spot"><%= yield :title %></div>
 </div>
 <div id="flash">
     <% if flash[:alert] %>

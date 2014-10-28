@@ -7,41 +7,27 @@
 
 <div class="student_selector" id="ss">
 	<h4 class="student_selector_title">
-		<!--<a href="#" id="random_student_selector" style="color:white">Click to Select Student at Random</a>-->
 		<p class="select_n_at_random" style="color:white">  Select n students at random: </p>
-		<a href="#" id="select_1" class="select_n_at_random" style="color:white">1</a>
-		<a href="#" id="select_10" class="select_n_at_random" style="color:white">10</a>
-		<a href="#" id="select_25" class="select_n_at_random" style="color:white">25</a>
-		<a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
+		<div id="select_n">
+			<a href="#" id="select_1" class="select_n_at_random" style="color:white">1</a>
+			<a href="#" id="select_10" class="select_n_at_random" style="color:white">10</a>
+			<a href="#" id="select_25" class="select_n_at_random" style="color:white">25</a>
+			<a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
+		</div>	
 	</h4>
 
 	<div id="students_box" class="box_content">	
-		<!--<div id="student_input">
-			<div id="selected_student_name" class="selected_student_name_class"></div><br>
-			<div id="buttons" style="visibility:hidden;">
-			    <button type="button" id="answer" class="btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>
-			    <button type="button" id="pass" class="btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>
-			    <button type="button" id="absent" class="btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>
-			    <button type="button" id="note" class="btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>
-			</div>
-			<div id="selected_student_note" class="selected_student_note_class"></div>
-		</div>	-->
 	</div>
 </div>
 <!--The following div just holds the blockUI prompt, only displays w\ "Note" is clicked -->
-<div id="note_prompt" style="display:none; cursor: default">
-		<h2>Please enter a student note</h2>
-		<input type="text_area" id="note_left" /><br>
-		<input type="button" id="submit" value="Submit" />
-		<input type="button" id="cancel" value="Cancel" />
-</div>
 <% student_array = Array.new %>
 <% student_note_array = {} %>
 <a href="#" id="toggle_student_list">Toggle Student List</a><br>
 <div id= "student_list" style="display:none" class="student_selector">
     <div class="box_content">
-    	<%= link_to "Download as CSV", :controller => :courses, :action => :show, :format => :csv %>
-	    <table id="student_info" class="display" cellspacing="0" width="30%" text-align="center">
+    	<!--<= link_to "Download as CSV", "data-no-turbolink" => true, :remote => true, :controller => :courses, :action => :show, :format => :csv %>-->
+    	<a id="download_csv" data-remote="true" href="/courses/<%= @course.id %>.csv" class="ui-link" data-no-turbolink>Download as CSV</a>
+	    <table id="student_info" class="display" cellspacing="0" width="100%" text-align="center">
 	        <thead>
 	        <tr>
 	            <th>Student Name</th>
@@ -72,20 +58,20 @@
 	</div>    
 </div>
 <br style="clear:both">
-<%= link_to 'Edit Roster', edit_course_path %>
-<%= link_to 'User Page', user_path(@course.user_id) %>
+<%= link_to 'Edit Roster', edit_course_path, {:class => 'course_link'} %>
+<%= link_to 'User Page', user_path(@course.user_id), {:class => 'course_link'} %>
 
 <!-- A whole series of button/data shenanigans, updates as needed and such -->
 <script type="text/javascript">
 	var oTable = null;
-	var current_student;
 	var courses_student = <%= raw student_note_array.to_json %>;
 	$(document).ready(function() {
-		var student = null;
-		var last_student;
 		var connection_loss_note = false;
+   		var absent_students = [];
 
-    var absent_students = [];
+   	$("#download_csv").click(function(e){
+   	 window.open($(this).attr('href'));
+	});
 
 		//Sets up the datatable for student info
 		function initTable()
@@ -116,6 +102,12 @@
 		$(".select_n_at_random").click(function(e){
 			e.preventDefault();
 		     
+		    if($('.student_input').length){ // delete divs displaying students if any
+		    	$('.student_input').remove();
+		    	if($('#next_round_message').length)
+		    		$('#next_round_message').remove();
+		    }	
+
 		    if($(this).attr("id") == 'select_1')
 		    	show_n_students(1);
 		    else if($(this).attr("id") == 'select_10')
@@ -153,6 +145,8 @@
 		        });
 		        select_students(eligible_students,listed_students,n);
 		        if(listed_students.length != n){
+		        	$("#students_box").append(
+		        		'<div id="next_round_message">Students shown below this line have answered more questions than those above it</div>');
 		        	var next_students = student_list.filter(function(s){
 		          	return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered == max_answered && absent_students.indexOf(s.id) == -1;
 		        	});
@@ -161,18 +155,18 @@
 		      };//else  
 		};
 
-		function show_student_info(){
+		function show_student_info(student){
 			 //Display randomly selected student
-      		$("#selected_student_name_"+current_student).text(student.name+" ("+student.SID+")");
-			$("#selected_student_note_"+current_student).text(""); //Make sure it starts blank
+      		$("#selected_student_name_"+student.id).text(student.name+" ("+student.SID+")");
+			$("#selected_student_note_"+student.id).text(""); //Make sure it starts blank
 
 			//Trim all space characters and see if there's anything in the note, don't display if just spaces
 			var noteText;
-			if(courses_student[current_student].note != null) //Without this conditional shenanigans happen all over
-				noteText = courses_student[current_student].note.replace(/^\s+/, '').replace(/\s+$/, '');
-			if(courses_student[current_student].note != null && noteText != '' )
+			if(courses_student[student.id].note != null) //Without this conditional shenanigans happen all over
+				noteText = courses_student[student.id].note.replace(/^\s+/, '').replace(/\s+$/, '');
+			if(courses_student[student.id].note != null && noteText != '' )
 			{
-				$("#selected_student_note_"+student.id).text("Note: " + courses_student[current_student].note);
+				$("#selected_student_note_"+student.id).text("Note: " + courses_student[student.id].note);
 				$("#selected_student_note_"+student.id).css('visibility','visible');
 			}
 			else {$("#selected_student_note_"+student.id).css('visibility', 'hidden');} //No note? Don't just say Note for no reason
@@ -181,182 +175,150 @@
 
 		function select_students(eligible_students, listed_students,n){
 			var j, k = listed_students.length + eligible_students.length;
-			var bucket = [];
+			var bucket = [];//bucket is used as a list of valid indicices in eligible_students to be added to listed_students
 			for(var i = 0; i < eligible_students.length;i++){
 	        	bucket.push(i);
 		    };
 		    for(var i = listed_students.length;i < n && i < k;i++){
 		        j = Math.floor(Math.random()*bucket.length);		        		
 		        listed_students[i] = eligible_students[bucket[j]];
-		        student = listed_students[i];
-		        current_student = student.id;
-		        display_student();
+		        display_student(listed_students[i]);//changed
 		        bucket.splice(j,1);
 		      }  
 		}
 
-		function display_student(){
-			$("#students_box").append(
-			  '<div id="student_input_'+current_student+'" class="student_input">'+
-				'<div id="selected_student_name_'+current_student+'" class="selected_student_name_class"></div><br>'+
-				'<div id="buttons_'+current_student+'" class="buttons">'+
-					'<button type="button" id="answer_'+current_student+'" class="answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
-					'<button type="button" id="pass_'+current_student+'" class="pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
-					'<button type="button" id="absent_'+current_student+'" class="absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
-					'<button type="button" id="note_'+current_student+'" class="note btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>'+
-				'</div>'+
-				'<div id="selected_student_note_'+current_student+'" class="selected_student_note_class"></div>'+
-			  '</div>'	
-			);
-			var this_answer = "#answer_" + current_student.toString();
-			$(this_answer).on("click", {id: this_answer}, handle_answer);
-			show_student_info();
+		//displays randomly selected student
+		function display_student(student){
+
+			$("#students_box").append(	
+				  '<div id="student_input_'+student.id+'" class="student_input">'+
+					'<div id="selected_student_name_'+student.id+'" class="selected_student_name_class"></div><br>'+
+					'<div id="selected_student_note_'+student.id+'" class="selected_student_note_class"></div>'+
+					'<div id="buttons_'+student.id+'" class="buttons">'+
+						'<div class="button_group">' +
+							'<button type="button" id="answer_'+student.id+'" class="my_btn disable_btn answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
+							'<button type="button" id="pass_'+student.id+'" class="my_btn disable_btn  pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
+						'</div>' +
+						'<div class="button_group">' +	
+							'<button type="button" id="absent_'+student.id+'" class="my_btn disable_btn absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
+							'<button type="button" id="note_'+student.id+'" class="my_btn disable_btn note btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>'+
+						'</div>' +	
+					'</div>'+
+				  '</div>');	
+			toggle_on_off(student);
+			show_student_info(student);
 		}
 
-		function handle_answer(e){
-		//$(".answer").click(function(e){			
+		function toggle_on_off(student){
+			var answer = "#answer_" + student.id.toString();
+			var absent = "#absent_" + student.id.toString();
+			var pass = "#pass_" + student.id.toString();
+			var note = "#note_" + student.id.toString();
+
+			$(answer).off("click", {response_type: "answer", student: student}, handle_student_response);
+			$(absent).off("click", {response_type: "absent", student: student}, handle_student_response);
+			$(pass).off("click", {response_type: "pass", student: student}, handle_student_response);
+			$(note).off("click", {response_type: "note", student: student}, handle_student_response);	
+
+			$(answer).on("click", {response_type: "answer", student: student}, handle_student_response);
+			$(absent).on("click", {response_type: "absent", student: student}, handle_student_response);
+			$(pass).on("click", {response_type: "pass", student: student}, handle_student_response);
+			$(note).on("click", {response_type: "note", student: student}, handle_student_response);			
+
+		}
+
+		function generate_note_prompt(student_id,note){
+			return ('<div id="note_prompt" style="cursor: default">'+
+				'<h2>Please enter a student note</h2>'+
+				'<input type="text" id="note_left" val="'+note+'"/><br>'+
+				'<input type="button" id="submit_'+student_id+'" value="Submit" />'+
+				'<input type="button" id="cancel_'+student_id+'" value="Cancel" />'+
+			'</div>');
+		}
+
+		function handle_student_response(e){		
 			e.preventDefault();
-			console.log(e);
 
-      		var local_storage_key = new Date().getTime();
-      		var date = new Date().toDateString();
-			var course_id = <%= @course.id %>;
-			var current_id = parseInt(((e.data.id).split("_"))[1]);//get student's id from after the "_"
-			console.log(e.data.id);
-			console.log(current_id);
-			var value = {action: "answer",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
-			localStorage.setItem(
-          		local_storage_key,
-          		JSON.stringify(value)
-        	);
+			var student = e.data.student;
+			var response_type = e.data.response_type;
+			var note = courses_student[student.id].note;
 
-      		courses_student[current_id].answered++;
-      		console.log(courses_student[current_id]);
-			$.ajax({
-	  			type: "POST",
-	  			url: "<%= answer_course_path(@course.id) %>",
-	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
-	  			success: function(data){
-	  				localStorage.removeItem(parseInt(data["key"]));
-	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_answer")[0]);
-	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
-	  			},
-	  			dataType: "json",
-	  			async: "false",
-	  			error: function(XMLHttpRequest, textStatus, errorThrown)
-        		{
-        			connection_error_info(0);
-        		}
-			});
-			//display_update();
-			/*document.getElementById("selected_student_name").innerHTML = "<strong>Page updating, please wait</strong>";
-			//If there aren't URL params yet, put in a ? and add it, else remove the existing ones and then do that
-			if(window.location.search.substring(0,1) != "?")
-			{
-				window.location.href += "?"+(encodeURIComponent(last_student)) + "#ss";
-			}
-			else
-			{
-				window.location.href -= window.location.search;
-				window.location.href = "?"+encodeURIComponent(last_student) + "#ss";
-			}*/
-		}//);
+			if(response_type == "note"){
+				$.blockUI({message:  generate_note_prompt(student.id,note),css: {width: '275px'}});
+				$("#submit_"+student.id).off("click",{student_id: student.id, note: note }, note_submit_handler);
+				$("#cancel_"+student.id).off("click",cancel_handler);
+				$("#submit_"+student.id).on("click",{student_id: student.id, note: note }, note_submit_handler);
+				$("#cancel_"+student.id).on("click",cancel_handler);
+			}else{	
 
+				var student_list = <%= raw student_array.to_json %>;
+	      		var local_storage_key = new Date().getTime();
+	      		var date = new Date().toDateString();
+				var course_id = <%= @course.id %>;
+				var value = {action: response_type, student: {id: student.id, name: student.name}, id: course_id, date: date};
 
-		$(".absent").click(function(e){
-			e.preventDefault();
-			var local_storage_key = new Date().getTime();
-      		var date = new Date().toDateString();
-			var course_id = <%= @course.id %>;
-			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
-			var value = {action: "absent",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
-			localStorage.setItem(
-          		local_storage_key,
-          		JSON.stringify(value)
-        	);
+				localStorage.setItem(
+	          		local_storage_key,
+	          		JSON.stringify(value)
+	        	);
+				if(response_type == "answer")
+					courses_student[student.id].answered++;
+				else if(response_type == "absent")
+					absent_students.push(student.id);
 
-      		absent_students.push(current_id);
+				set_to_grey(student.id);
 
-			$.ajax({
-	  			type: "POST",
-	  			url: "<%= absent_course_path(@course.id) %>",
-	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
-	  			success: function(data){
-	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_absent")[0]);
-	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	  				localStorage.removeItem(parseInt(data["key"]));
-	  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
-	  			},
-	  			dataType: "json",
-	  			error: function(XMLHttpRequest, textStatus, errorThrown)
-        		{
-        			connection_error_info(0);
-        		}
-			});
-			//display_update();
-		});
+				$.ajax({
+		  			type: "POST",
+		  			url: "/courses/"+course_id+"/"+response_type+".json",
+		  			data: {student: student, key:local_storage_key, date: date},
+		  			success: function(data){
+		  				localStorage.removeItem(parseInt(data["key"]));
+		  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type)[0]);
+		  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
+		  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
+		  			},
+		  			dataType: "json",
+		  			async: "false",
+		  			error: function(XMLHttpRequest, textStatus, errorThrown)
+	        		{
+	        			connection_error_info(0);
+	        		}
+				});
+			}	
+		}
 
-
-		$(".pass").click(function(e){
-			e.preventDefault();
-			var local_storage_key = new Date().getTime();
-      		var date = new Date().toDateString();
-			var course_id = <%= @course.id %>;
-			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
-			var value = {action: "pass",student: {id: current_id, name: courses_student[current_id].name}, id: course_id, date: date};
-			localStorage.setItem(
-          		local_storage_key,
-          		JSON.stringify(value)
-        	);
-			$.ajax({
-	  			type: "POST",
-	  			url: "<%= pass_course_path(@course.id) %>",
-	  			data: {student:courses_student[current_id], key:local_storage_key, date: date},
-	  			success: function(data){
-	  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_pass")[0]);
-	  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	  				localStorage.removeItem(parseInt(data["key"]));
-	  				connection_error_info(1);
-	  			},
-	  			dataType: "json",
-	  			error: function(XMLHttpRequest, textStatus, errorThrown)
-        		{
-        			connection_error_info(0);  //See if previous connection failed, let user know it's reestablished
-        		}
-			});
-			//display_update();
+		function note_submit_handler(e){
+			var student_id = e.data.student_id;
 			
-		});
-
-
-		//Figure out a way to update note w/o reload
-		$(".note").click(function(e){
-			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
-			$('#note_left').val(courses_student[current_id].note);
-			$.blockUI({message: $('#note_prompt'), css: {width: '275px'}})
-		})
-		$("#submit").click(function(e){
-			$.unblockUI();
-			var current_id = parseInt((($(this).attr("id")).split("_"))[1]);//get student's id from after the "_"
 			$.ajax({
 	  			type: "POST",
-	  			url: "/courses_students/"+courses_student[current_id].id+"/update_note.json",
-	  			data: {note:$("#note_left").val()},
+	  			url: "/courses_students/"+courses_student[student_id].id+"/update_note.json",
+	  			data: {note: $("#note_left").val()},
 	  			success: function(data){
 	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
-					$("#selected_student_note_"+current_id).text(" Note: " + data["note"]);
-					courses_student[current_id].note = data["note"];
-					$("#selected_student_note_"+current_id).text("Note: " + courses_student[current_id].note);
-					$("#selected_student_note_"+current_id).css('visibility','visible');
+					$("#selected_student_note_"+student_id).text(" Note: " + data["note"]);
+					courses_student[student_id].note = data["note"];
+					$("#selected_student_note_"+student_id).text("Note: " + courses_student[student_id].note);
+					$("#selected_student_note_"+student_id).css('visibility','visible');
 	  			},
 	  			dataType: "json"
 			});
-		})
-		$("#cancel").click(function(e){
+			$.unblockUI();
+		}
+
+		function cancel_handler(e){
 			$.unblockUI();
 			return false;
-		});
+		}
+
+		function set_to_grey(student_id){
+	        $('#answer_'+student_id).prop('disabled', true);
+	        $('#absent_'+student_id).prop('disabled', true);	     
+	        $('#pass_'+student_id).prop('disabled', true);
+	        $('#student_input_'+student_id).css('background','#555');
+	        $('#student_input_'+student_id).css('opacity', 0.75);        
+		}
 
 
 		//Gets called whenever a submission of some sort occurs to check connection status, displays connections and syncs appropriately
@@ -384,12 +346,7 @@
 
 			}
 		}
-		//Change necessary visibilities, set last student text appropriately
-		function display_update()
-		{
-			$("#buttons_"+current_student).css('visibility','hidden');
-			//$("#last_student").text("Previous student: "+ student.name+ "("+student.SID+")");
-		}
+
 })
 	
 </script>

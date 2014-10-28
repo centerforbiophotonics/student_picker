@@ -36,9 +36,10 @@ class CoursesController < ApplicationController
 	end
   
   def show
-    @course = Course.find params[:id]
+    @course = Course.find(params[:id])
     respond_to do |format|
-      format.csv { send_data @course.to_csv, :filename => "student_participation_for_#{@course.name}.csv"}
+      format.csv { send_data @course.to_csv,   :type => 'text/csv; charset=iso-8859-1; header=present',
+                  :disposition => "attachment; filename=export.csv"}
       format.html {}
       #format.json { head :no_content }
     end
@@ -108,7 +109,6 @@ class CoursesController < ApplicationController
 
   def answer
   	course = Course.find params[:id]
-    puts course.courses_students.inspect
     courses_students = course.courses_students.where(:students_id => params[:student][:id]).first
 
     courses_students.answered += 1

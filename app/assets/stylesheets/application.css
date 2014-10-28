@@ -15,6 +15,7 @@
  *= require_self
  */
  
+
  .flash-error{
 	color: red;
 }
@@ -37,10 +38,11 @@ body {
 
 .title_spot{
     width: 50%;
+    line-height: 32px !important;
     margin: 0 auto; 
     text-align:center;
     font-family: 'Nunito', sans-serif;
-    font-size: x-large;
+    font-size: 32px;
 }
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Nunito', sans-serif;
@@ -67,14 +69,17 @@ a {
     position:relative;
 }
 
+
 .box_content {
     padding: 5px;
     background-color: #fff;
 }
 
 .user_nav_class{
-    float:right;
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
     color:white;
     z-index: 1;  
-    margin: -7px;
+    font-size: large;
 }

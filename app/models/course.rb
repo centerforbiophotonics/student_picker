@@ -7,13 +7,15 @@ class Course < ActiveRecord::Base
 
   def to_csv
   	CSV.generate do |csv|
-  		csv << ["Name", "SID", "Answered", "Absent", "Passed"]
+  		csv << ["Name", "SID", "Answered", "Answer Dates", "Absent", "Absent Dates", "Passed", "Passed Dates"]
   		students.each do |student|
+        cs = student.courses_student.where(:courses_id => id).first
   			csv << [student.name,
   			  student.sid,
-  			  student.courses_student.where(:courses_id => id).first.answered,
-  		      student.courses_student.where(:courses_id => id).first.absent,
-  		      student.courses_student.where(:courses_id => id).first.passed]
+  			  cs.answered,cs.answered_dates,
+  		      cs.absent,cs.absent_dates,
+  		      cs.passed,cs.passed_dates]
+
   		end
   	end
   end
