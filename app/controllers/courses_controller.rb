@@ -39,7 +39,7 @@ class CoursesController < ApplicationController
     @course = Course.find(params[:id])
     respond_to do |format|
       format.csv { send_data @course.to_csv,   :type => 'text/csv; charset=iso-8859-1; header=present',
-                  :disposition => "attachment; filename=export.csv"}
+                  :disposition => "attachment; filename=student_participation_for_#{@course.name}.csv"}
       format.html {}
       #format.json { head :no_content }
     end
@@ -48,9 +48,10 @@ class CoursesController < ApplicationController
   def destroy
     @course = Course.find params[:id]
       @user = @course.user
+      @title = "Showing User: #{@user.name}" 
       @course.destroy
       respond_to do |format|
-        format.html { redirect_to @user}
+        format.html { redirect_to user_url(@user.id)}
         format.json { head :no_content }
     end
   end

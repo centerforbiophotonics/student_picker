@@ -10,7 +10,7 @@ Showing User: <%= @user.name %>
       <div class="box_content" style="font-size:large;">
           <%= link_to 'Edit Course', edit_user_course_path(course.user_id, course.id)%> |
           <%= link_to 'Open Course', course%> | 
-          <%= link_to 'Delete Course', course, method: :delete, data: { confirm: 'Are you sure?' } %><br>
+          <%= link_to 'Delete Course', course, method: :delete, data: { confirm: 'Are you sure?'},:"data-ajax" => false %><br>
           <a href="#" id="display_students-<%=course.id%>" class = "student_collapser">Toggle Student List</a>
              |   
           <a id="download_csv_<%=course.id%>" class="download_csv" data-remote="true" href="/courses/<%= course.id %>.csv" class="ui-link" data-no-turbolink>Download as CSV</a><br>

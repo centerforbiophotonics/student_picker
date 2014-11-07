@@ -10,30 +10,30 @@
 		<%= csrf_meta_tags %>
 	</head>
 <body>
-
-<div class="header">
-    <div class="title_spot"><%= yield :title %></div>
-    <div id="user_nav" class="user_nav_class">
-        <% if user_signed_in? %>
-            Signed in as <%= current_user.email %>&nbsp;<br>
-            <%= link_to 'Sign out', destroy_user_session_path, :method => :delete %>
-        <% else %>
-            <% unless current_page?(new_user_registration_path) %>
-                <%= link_to 'Register', new_user_registration_path %> or <%= link_to 'Sign in', new_user_session_path %>
+<div data-role="page" id="home" data-url="<%= request.path %>">
+    <div class="header">
+        <div class="title_spot"><%= yield :title %></div>
+        <div id="user_nav" class="user_nav_class">
+            <% if user_signed_in? %>
+                Signed in as <%= current_user.email %>&nbsp;<br>
+                <%= link_to 'Sign out', destroy_user_session_path, :method => :delete %>
+            <% else %>
+                <% unless current_page?(new_user_registration_path) %>
+                    <%= link_to 'Register', new_user_registration_path %> or <%= link_to 'Sign in', new_user_session_path %>
+                <% end %>
             <% end %>
+        </div>
+    </div>
+    <div id="flash">
+        <% if flash[:alert] %>
+          <p class="flash-error"><%= flash[:alert] %></p>
+        <% end %>
+        <% if flash[:notice] %>
+          <p class="flash-notice"><%= flash[:notice] %></p>
         <% end %>
     </div>
-</div>
-<div id="flash">
-    <% if flash[:alert] %>
-      <p class="flash-error"><%= flash[:alert] %></p>
-    <% end %>
-    <% if flash[:notice] %>
-      <p class="flash-notice"><%= flash[:notice] %></p>
-    <% end %>
-</div>
 
-<%= yield %>
-
+    <%= yield %>
+</div>
 </body>
 </html>
