@@ -47,9 +47,10 @@ class CoursesController < ApplicationController
 
   def destroy
     @course = Course.find params[:id]
+      @user = @course.user
       @course.destroy
       respond_to do |format|
-        format.html { redirect_to @course.user}
+        format.html { redirect_to @user}
         format.json { head :no_content }
     end
   end
