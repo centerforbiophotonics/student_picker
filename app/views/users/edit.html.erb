@@ -28,11 +28,11 @@ Discard changes and:
 <div id="add_course">
   <h4 class="box_title">Add a course:</h4>
   <div class="box_content"  id="new_course_container">
-    <%= form_for([@user, @user.courses.build], :html=> {:multipart=>true}) do |f| %>
-      <% @course = @user.courses.new %>
-      <%= render :partial => "courses/form" %>
 
-    <% end %>
+    <% @course = @user.courses.new %>
+    <%= render :partial => "courses/form" %>
+
+
   </div>
 </div>
 

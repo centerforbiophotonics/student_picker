@@ -16,6 +16,10 @@
         <%= f.text_field :name %><br>
       </div>
 
+
+      <%= f.hidden_field :user_id, :value => current_user.id %><br>
+
+
       <div class="field">
         <%= f.label :student_list, "Upload Student Roster" %><br>
         <%= f.file_field :student_list %>
@@ -34,18 +38,18 @@
   </div>
 <% end %>
 
-  <script type="text/javascript">
-    $(document).ready(function() {
-        $("#edit_course_<%=@course.id%>, #new_course").submit(function(e){
-          $("#course_submit_button").prop('disabled', true);
-        })
-    })
-    $(document).ajaxComplete(function(event, jqXHR, ajaxOptions){
-      if (jqXHR.status != 200){
-        //Replace the form html with form html from server with the validation errors and styling on the fields
-        try{
-          replace_new_course_form(jqXHR.responseText);
-        } catch(err){}    
-      }  
-    });
-  </script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $("#edit_course_<%=@course.id%>, #new_course").submit(function(e){
+        $("#course_submit_button").prop('disabled', true);
+      })
+  })
+  $(document).ajaxComplete(function(event, jqXHR, ajaxOptions){
+    if (jqXHR.status != 200){
+      //Replace the form html with form html from server with the validation errors and styling on the fields
+      try{
+        replace_new_course_form(jqXHR.responseText);
+      } catch(err){}
+    }
+  });
+</script>

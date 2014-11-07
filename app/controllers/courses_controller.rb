@@ -2,7 +2,7 @@ class CoursesController < ApplicationController
   require 'csv'
 
   def create #TODO: figure out what calls to save! are redundant
-    @user = User.find(params[:user_id])
+    @user = User.find(params[:course][:user_id])
     @course = @user.courses.new
     @course.name = params[:course][:name]
     success = @course.save
