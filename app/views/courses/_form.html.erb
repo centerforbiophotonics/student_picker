@@ -12,16 +12,16 @@
   <div class="box_title">
     <div class="box_content" style="color:black">
       <div class="field">
-        <%= f.label :name %><br>
-        <%= f.text_field :name %><br>
+        <%= f.label :name %>
+        <%= f.text_field :name %>
       </div>
 
 
-      <%= f.hidden_field :user_id, :value => current_user.id %><br>
+      <%= f.hidden_field :user_id, :value => current_user.id %>
 
 
       <div class="field">
-        <%= f.label :student_list, "Upload Student Roster" %><br>
+        <%= f.label :student_list, "Upload Student Roster" %>
         <%= f.file_field :student_list %>
 
         <p id="warning_text">

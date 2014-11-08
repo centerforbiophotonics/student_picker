@@ -32,7 +32,7 @@ Showing User: <%= @user.name %>
 	$(".student_collapser").click(function(e){
 		e.preventDefault();
 		var course_id = $(this).attr("id").split("-")[1];
-		$("#student_list-"+course_id).slideToggle();
+		$(".ui-page-active #student_list-"+course_id).slideToggle();
 	})
 
   $(".download_csv").click(function(e){
