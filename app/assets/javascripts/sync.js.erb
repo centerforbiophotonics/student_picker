@@ -18,6 +18,9 @@ $(function(){
         },
         success: function(data, textStatus, jqXHR){
           localStorage.removeItem(parseInt(data["key"]));
+          try{
+            update_oTable(data, value.action);
+          }catch(e){}
         },
         dataType: "json",
         error: function(){
@@ -28,5 +31,7 @@ $(function(){
       console.log("sync");
     });
   }
+  sync();
 });
+
 

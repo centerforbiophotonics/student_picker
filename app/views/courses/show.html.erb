@@ -23,7 +23,7 @@
 <% student_array = Array.new %>
 <% student_note_array = {} %>
 <a href="#" id="toggle_student_list">Toggle Student List</a><br>
-<div id= "student_list" style="display:none" class="student_selector">
+<div id= "student_list"  class="student_selector">
     <div class="box_content">
     	<!--<= link_to "Download as CSV", "data-no-turbolink" => true, :remote => true, :controller => :courses, :action => :show, :format => :csv %>-->
     	<a id="download_csv" data-remote="true" href="/courses/<%= @course.id %>.csv" class="ui-link" data-no-turbolink>Download as CSV</a>
@@ -32,8 +32,11 @@
 	        <tr>
 	            <th>Student Name</th>
 	            <th style="color:rgb(28, 184, 65)">Answered</th>
+	            <th style="color:rgb(28, 184, 65)">Last Answered Date</th>       
 	            <th style="color:rgb(202, 60, 60)">Passed</th>
+	            <th style="color:rgb(202, 60, 60)">Last Passed Date</th>
 	            <th style="color:steelblue">Absent</th>
+	            <th style="color:steelblue">Last Absent Date</th>
 	        </tr>
 	        </thead>
 	        <tbody>
@@ -41,16 +44,20 @@
 	          <tr>
 	              <td><%=student.name%></td>
 	              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
+	              <% courses_student = student.courses_student.where(:courses_id => @course.id).first %>
 	              <% student_note_array[student.id] = {
-                  :note => student.courses_student.where(:courses_id => @course.id).first.note,
-                  :id => student.courses_student.where(:courses_id => @course.id).first.id ,
-                  :answered => student.courses_student.where(:courses_id => @course.id).first.answered
+                  :note => courses_student.note,
+                  :id => courses_student.id ,
+                  :answered => courses_student.answered
                   }
                 %>
 
-	              <td id="<%=student.id%>_answer"><%=student.courses_student.where(:courses_id => @course.id).first.answered%></td>
-	              <td id="<%=student.id%>_pass"><%=student.courses_student.where(:courses_id => @course.id).first.passed%></td>
-	              <td id="<%=student.id%>_absent"><%=student.courses_student.where(:courses_id => @course.id).first.absent%></td>
+	              <td id="<%=student.id%>_answer"><%=courses_student.answered%></td>
+	              <td id="<%=student.id%>_answer"><%=courses_student.answered_dates.last%></td>
+	              <td id="<%=student.id%>_pass"><%=courses_student.passed%></td>
+	              <td id="<%=student.id%>_pass"><%=courses_student.passed_dates.last%></td>
+	              <td id="<%=student.id%>_absent"><%=courses_student.absent%></td>
+	              <td id="<%=student.id%>_absent"><%=courses_student.absent_dates.last%></td>
 	          </tr>
 	        <% end %>
 	        </tbody>
@@ -64,15 +71,25 @@
 <!-- A whole series of button/data shenanigans, updates as needed and such -->
 <script type="text/javascript">
 	var oTable = null;
+	var update_oTable = null;
 	var courses_student = <%= raw student_note_array.to_json %>;
 	$(document).ready(function() {
 		var connection_loss_note = false;
    		var absent_students = [];
+   		
+	   	$("#download_csv").click(function(e){
+	   	 	window.open($(this).attr('href'));
+		});
 
-   	$("#download_csv").click(function(e){
-   	 window.open($(this).attr('href'));
-	});
+	   	update_oTable = function(data, response_type){
+	   		var pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type)[0]);
+		  	oTable.fnUpdate(data["value"], pos[0], pos[1] );
+	   	}
 
+	   	window.setInterval(function(){
+	   		if(ping())
+	   			connection_error_info(1);
+	   		}, 5000);
 		//Sets up the datatable for student info
 		function initTable()
 		{
@@ -274,8 +291,7 @@
 		  			data: {student: student, key:local_storage_key, date: date},
 		  			success: function(data){
 		  				localStorage.removeItem(parseInt(data["key"]));
-		  				var pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type)[0]);
-		  				oTable.fnUpdate(data["value"], pos[0], pos[1] );
+		  				update_oTable(data, response_type);
 		  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
 		  			},
 		  			dataType: "json",
@@ -328,7 +344,7 @@
 			{
 				if(!connection_loss_note)
 				{	
-	    			alert('The connection appears to be lost. Do not refresh the page, the application will work and update when the connection is reestablished');
+	    			//alert('The connection appears to be lost. Do not refresh the page, the application will work and update when the connection is reestablished');
 	    			connection_loss_note = true;
 	    		}
 		    	$("#flash").html("<strong><p class=\"flash-error\">Connection still not found</p></strong>");
