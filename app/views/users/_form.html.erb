@@ -1,33 +1,35 @@
-<%= form_for(@user) do |f| %>
-  <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+<div class="course_form_container">
+  <%= form_for(@user) do |f| %>
+    <% if @user.errors.any? %>
+      <div id="error_explanation">
+          <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
-      <ul>
-      <% @user.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-  <% if flash[:notice] %>
-    <div id="notice"><%= flash[:notice] %></div>
-  <% end %>
+          <ul>
+              <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+          </ul>
+      </div>
+    <% end %>
+    <% if flash[:notice] %>
+      <div id="notice"><%= flash[:notice] %></div>
+    <% end %>
 
-  <div class="field">
-    <%= f.label :name %>
-    <%= f.text_field :name, :value => @user.name %>
-  </div>
-
-  <% if current_user.present? && current_user.admin %>
     <div class="field">
-        <%= f.label :admin %>:
-        <%= f.check_box :admin, :value => @user.admin %>
+        <%= f.label :name %>
+        <%= f.text_field :name, :value => @user.name %>
+    </div>
+
+    <% if current_user.present? && current_user.admin %>
+      <div class="field">
+          <%= f.label :admin %>
+          <%= f.check_box :admin, :value => @user.admin %>
+      </div>
+    <% end %>
+
+
+    <div class="actions">
+        <%= f.submit %>
     </div>
   <% end %>
-
-  
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-<% end %>
+</div>

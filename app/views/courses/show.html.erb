@@ -6,363 +6,413 @@
 
 
 <div class="student_selector" id="ss">
-	<h4 class="student_selector_title">
-		<p class="select_n_at_random" style="color:white">  Select n students at random: </p>
-		<div id="select_n">
-			<a href="#" id="select_1" class="select_n_at_random" style="color:white">1</a>
-			<a href="#" id="select_10" class="select_n_at_random" style="color:white">10</a>
-			<a href="#" id="select_25" class="select_n_at_random" style="color:white">25</a>
-			<a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
-		</div>	
-	</h4>
+  <h4 class="student_selector_title">
+    <p class="select_n_at_random" style="color:white">  Select n students at random: </p>
+    <div id="select_n">
+        <a href="#" id="select_1" class="select_n_at_random" style="color:white">1</a>
+      <a href="#" id="select_10" class="select_n_at_random" style="color:white">10</a>
+      <a href="#" id="select_25" class="select_n_at_random" style="color:white">25</a>
+      <a href="#" id="select_50" class="select_n_at_random" style="color:white">50</a>
+    </div>
+  </h4>
 
-	<div id="students_box" class="box_content">	
-	</div>
+  <div id="students_box" class="box_content">
+  </div>
 </div>
-<!--The following div just holds the blockUI prompt, only displays w\ "Note" is clicked -->
+
 <% student_array = Array.new %>
 <% student_note_array = {} %>
-<a href="#" id="toggle_student_list">Toggle Student List</a><br>
-<div id= "student_list"  class="student_selector">
-    <div class="box_content">
-    	<!--<= link_to "Download as CSV", "data-no-turbolink" => true, :remote => true, :controller => :courses, :action => :show, :format => :csv %>-->
-    	<a id="download_csv" data-remote="true" href="/courses/<%= @course.id %>.csv" class="ui-link" data-no-turbolink>Download as CSV</a>
-	    <table id="student_info" class="display" cellspacing="0" width="100%" text-align="center">
-	        <thead>
-	        <tr>
-	            <th>Student Name</th>
-	            <th style="color:rgb(28, 184, 65)">Answered</th>
-	            <th style="color:rgb(28, 184, 65)">Last Answered Date</th>       
-	            <th style="color:rgb(202, 60, 60)">Passed</th>
-	            <th style="color:rgb(202, 60, 60)">Last Passed Date</th>
-	            <th style="color:steelblue">Absent</th>
-	            <th style="color:steelblue">Last Absent Date</th>
-	        </tr>
-	        </thead>
-	        <tbody>
-	        <% @course.students.each do |student| %>
-	          <tr>
-	              <td><%=student.name%></td>
-	              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
-	              <% courses_student = student.courses_student.where(:courses_id => @course.id).first %>
-	              <% student_note_array[student.id] = {
-                  :note => courses_student.note,
-                  :id => courses_student.id ,
-                  :answered => courses_student.answered
-                  }
-                %>
 
-	              <td id="<%=student.id%>_answer"><%=courses_student.answered%></td>
-	              <td id="<%=student.id%>_answer"><%=courses_student.answered_dates.last%></td>
-	              <td id="<%=student.id%>_pass"><%=courses_student.passed%></td>
-	              <td id="<%=student.id%>_pass"><%=courses_student.passed_dates.last%></td>
-	              <td id="<%=student.id%>_absent"><%=courses_student.absent%></td>
-	              <td id="<%=student.id%>_absent"><%=courses_student.absent_dates.last%></td>
-	          </tr>
-	        <% end %>
-	        </tbody>
-	    </table>
-	</div>    
+
+<a href="#" id="toggle_student_list">Toggle Student List</a><br>
+
+
+<div id= "student_list"  class="student_selector">
+  <div class="box_content">
+    <!--<= link_to "Download as CSV", "data-no-turbolink" => true, :remote => true, :controller => :courses, :action => :show, :format => :csv %>-->
+    <a id="download_csv" data-remote="true" href="/courses/<%= @course.id %>.csv" class="ui-link" data-no-turbolink>Download as CSV</a>
+    <table id="student_info" class="display" cellspacing="0" width="100%" text-align="center">
+        <thead>
+        <tr>
+            <th>Student Name</th>
+            <th style="color:rgb(28, 184, 65)">Answered</th>
+            <th style="color:rgb(28, 184, 65)">Last Answered Date</th>
+            <th style="color:rgb(202, 60, 60)">Passed</th>
+            <th style="color:rgb(202, 60, 60)">Last Passed Date</th>
+            <th style="color:steelblue">Absent</th>
+            <th style="color:steelblue">Last Absent Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @course.students.each do |student| %>
+          <tr>
+              <td><%=student.name%></td>
+              <% student_array.push({:name => student.name, :SID => student.sid, :id => student.id}) %>
+              <% courses_student = student.courses_student.where(:courses_id => @course.id).first %>
+              <% student_note_array[student.id] = {
+                :note => courses_student.note,
+                :id => courses_student.id ,
+                :answered => courses_student.answered
+                }
+              %>
+
+              <td id="<%=student.id%>_answer"><%=courses_student.answered%></td>
+              <td id="<%=student.id%>_answer_dates"><%=courses_student.answered_dates.last%></td>
+              <td id="<%=student.id%>_pass"><%=courses_student.passed%></td>
+              <td id="<%=student.id%>_pass_dates"><%=courses_student.passed_dates.last%></td>
+              <td id="<%=student.id%>_absent"><%=courses_student.absent%></td>
+              <td id="<%=student.id%>_absent_dates"><%=courses_student.absent_dates.last%></td>
+          </tr>
+        <% end %>
+        </tbody>
+    </table>
+  </div>
 </div>
 <br style="clear:both">
-<%= link_to 'Edit Roster', edit_course_path, {:class => 'course_link'} %>
-<%= link_to 'User Page', user_path(@course.user_id), {:class => 'course_link'} %>
+<%= link_to 'Go Back', user_path(@course.user_id), {:class => 'course_link'} %>
+<%= link_to 'Edit Roster', edit_course_path, {:class => 'course_link', :style => "float:right"} %>
+
 
 <!-- A whole series of button/data shenanigans, updates as needed and such -->
 <script type="text/javascript">
-	var oTable = null;
-	var update_oTable = null;
-	var courses_student = <%= raw student_note_array.to_json %>;
-	$(document).ready(function() {
-		var connection_loss_note = false;
-   		var absent_students = [];
-   		
-	   	$("#download_csv").click(function(e){
-	   	 	window.open($(this).attr('href'));
-		});
+  var oTable = null;
+  var update_oTable = null;
+  var courses_student = <%= raw student_note_array.to_json %>;
+  $(document).ready(function() {
+    var connection_loss_note = false;
+    var absent_students = [];
+    var connection_loss_pinging = false;
 
-	   	update_oTable = function(data, response_type){
-	   		var pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type)[0]);
-		  	oTable.fnUpdate(data["value"], pos[0], pos[1] );
-	   	}
+    $("#download_csv").click(function(e){
+      window.open($(this).attr('href'));
+    });
 
-	   	window.setInterval(function(){
-	   		if(ping())
-	   			connection_error_info(1);
-	   		}, 5000);
-		//Sets up the datatable for student info
-		function initTable()
-		{
-			oTable = $('#student_info').dataTable({
-				"paging": false,
-				"scrollY": "400px",
+    update_oTable = function(data, response_type){
+      var num_pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type)[0]);
+      var date_pos = oTable.fnGetPosition($("#"+data["id"]+"_"+response_type+"_dates")[0]);
+      oTable.fnUpdate(data["value"], num_pos[0], num_pos[1] );
+      oTable.fnUpdate(data["date"], date_pos[0], date_pos[1] );
+    }
+
+    function startConnectionLostTimer(){
+
+      var ping_timer = window.setInterval(
+        function(){
+          if( ping() ){
+            connection_error_info(1);
+            clearInterval(ping_timer);
+            connection_loss_pinging = false;
+          }
+        },
+        5000
+      );
+    }
+
+
+    function startTimerEvents(){
+      var flash_times = 8;
+      var flash_total = 0;
+      var flash_on = false;
+      var flashing_message_timer = window.setInterval(function(){
+        if (flash_total < flash_times){
+          if (flash_on)
+            $(".select_n_at_random").css("color","white");
+          else
+            $(".select_n_at_random").css("color","red");
+
+          flash_on = !flash_on;
+          flash_total++;
+
+        } else {
+          clearInterval(flashing_message_timer);
+          $(".select_n_at_random").css("color","white");
+
+        }
+
+      }, 500);
+
+    }
+    startTimerEvents();
+
+
+
+
+    //Sets up the datatable for student info
+    function initTable()
+    {
+      oTable = $('#student_info').dataTable({
+        "paging": false,
+        "scrollY": "400px",
         "scrollCollapse": true
-			});
-		}
-		initTable();
+      });
+    }
+    initTable();
 
-		$.ajaxSetup({
-  			headers: {
-    			'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-  			}
-		});
+    $.ajaxSetup({
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
 
-		//Listener for expanding or hiding the student info datatable
-		$("#toggle_student_list").click(function(e){
-			e.preventDefault();
-			$("#student_list").slideToggle();
-		})
+    //Listener for expanding or hiding the student info datatable
+    $("#toggle_student_list").click(function(e){
+      e.preventDefault();
+      $("#student_list").slideToggle();
+    })
 
 
 		//Selecting student and displaying/not displaying relevant info
 		$(".select_n_at_random").click(function(e){
 			e.preventDefault();
 		     
-		    if($('.student_input').length){ // delete divs displaying students if any
-		    	$('.student_input').remove();
-		    	if($('#next_round_message').length)
-		    		$('#next_round_message').remove();
-		    }	
+      if($('.student_input').length){ // delete divs displaying students if any
+        $('.student_input').remove();
+        if($('#next_round_message').length)
+          $('#next_round_message').remove();
+      }
 
-		    if($(this).attr("id") == 'select_1')
-		    	show_n_students(1);
-		    else if($(this).attr("id") == 'select_10')
-		    	show_n_students(10);
-		    else if($(this).attr("id") == 'select_25')
-		    	show_n_students(25);
-		    else if($(this).attr("id") == 'select_50')
-		    	show_n_students(50);	  
+      if($(this).attr("id") == 'select_1')
+        show_n_students(1);
+      else if($(this).attr("id") == 'select_10')
+        show_n_students(10);
+      else if($(this).attr("id") == 'select_25')
+        show_n_students(25);
+      else if($(this).attr("id") == 'select_50')
+        show_n_students(50);
+    });
+
+    function show_n_students(n){
+      var student_list = <%= raw student_array.to_json %>;
+        var min_answered = 99;
+        var max_answered = 0;
+        var listed_students = [];
+
+        if(n > student_list.length){
+          n = student_list.length
+        }
+
+          student_list.forEach(function(s){//find min_answered and max_answered
+            if (courses_student[s.id].answered < min_answered)
+              min_answered = courses_student[s.id].answered;
+
+            if (courses_student[s.id].answered > max_answered)
+              max_answered = courses_student[s.id].answered;
+          });
+
+          if (max_answered == min_answered){//if all have same number answered, choose randomly
+            select_students(student_list,listed_students,n);
+
+          } else {
+            var eligible_students = student_list.filter(function(s){
+              return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
+            });
+            select_students(eligible_students,listed_students,n);
+            if(listed_students.length != n){
+              $("#students_box").append(
+                '<div id="next_round_message">Students shown below this line have answered more questions than those above it</div>');
+              var next_students = student_list.filter(function(s){
+                return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered == max_answered && absent_students.indexOf(s.id) == -1;
+              });
+              select_students(next_students,listed_students,n);
+            }
+          };//else
+    };
+
+    function show_student_info(student){
+       //Display randomly selected student
+          $("#selected_student_name_"+student.id).text(student.name+" ("+student.SID+")");
+      $("#selected_student_note_"+student.id).text(""); //Make sure it starts blank
+
+      //Trim all space characters and see if there's anything in the note, don't display if just spaces
+      var noteText;
+      if(courses_student[student.id].note != null) //Without this conditional shenanigans happen all over
+        noteText = courses_student[student.id].note.replace(/^\s+/, '').replace(/\s+$/, '');
+      if(courses_student[student.id].note != null && noteText != '' )
+      {
+        $("#selected_student_note_"+student.id).text("Note: " + courses_student[student.id].note);
+        $("#selected_student_note_"+student.id).css('visibility','visible');
+      }
+      else {$("#selected_student_note_"+student.id).css('visibility', 'hidden');} //No note? Don't just say Note for no reason
+
+    }
+
+    function select_students(eligible_students, listed_students,n){
+      var j, k = listed_students.length + eligible_students.length;
+      var bucket = [];//bucket is used as a list of valid indicices in eligible_students to be added to listed_students
+      for(var i = 0; i < eligible_students.length;i++){
+            bucket.push(i);
+        };
+        for(var i = listed_students.length;i < n && i < k;i++){
+            j = Math.floor(Math.random()*bucket.length);
+            listed_students[i] = eligible_students[bucket[j]];
+            display_student(listed_students[i]);//changed
+            bucket.splice(j,1);
+          }
+    }
+
+    //displays randomly selected student
+    function display_student(student){
+
+      $("#students_box").append(
+          '<div id="student_input_'+student.id+'" class="student_input">'+
+          '<div id="selected_student_name_'+student.id+'" class="selected_student_name_class"></div><br>'+
+          '<div id="selected_student_note_'+student.id+'" class="selected_student_note_class"></div>'+
+          '<div id="buttons_'+student.id+'" class="buttons">'+
+            '<div class="button_group">' +
+              '<button type="button" id="answer_'+student.id+'" class="my_btn disable_btn answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
+              '<button type="button" id="pass_'+student.id+'" class="my_btn disable_btn  pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
+            '</div>' +
+            '<div class="button_group">' +
+              '<button type="button" id="absent_'+student.id+'" class="my_btn disable_btn absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
+              '<button type="button" id="note_'+student.id+'" class="my_btn disable_btn note btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>'+
+            '</div>' +
+          '</div>'+
+          '</div>');
+      toggle_on_off(student);
+      show_student_info(student);
+    }
+
+    function toggle_on_off(student){
+      var answer = "#answer_" + student.id.toString();
+      var absent = "#absent_" + student.id.toString();
+      var pass = "#pass_" + student.id.toString();
+      var note = "#note_" + student.id.toString();
+
+      $(answer).off("click", {response_type: "answer", student: student}, handle_student_response);
+      $(absent).off("click", {response_type: "absent", student: student}, handle_student_response);
+      $(pass).off("click", {response_type: "pass", student: student}, handle_student_response);
+      $(note).off("click", {response_type: "note", student: student}, handle_student_response);
+
+      $(answer).on("click", {response_type: "answer", student: student}, handle_student_response);
+      $(absent).on("click", {response_type: "absent", student: student}, handle_student_response);
+      $(pass).on("click", {response_type: "pass", student: student}, handle_student_response);
+      $(note).on("click", {response_type: "note", student: student}, handle_student_response);
+
+    }
+
+    function generate_note_prompt(student_id,note){
+      return ('<div id="note_prompt" style="cursor: default">'+
+        '<h2>Please enter a student note</h2>'+
+        '<input type="text" id="note_left" val="'+note+'"/><br>'+
+        '<input type="button" id="submit_'+student_id+'" value="Submit" />'+
+        '<input type="button" id="cancel_'+student_id+'" value="Cancel" />'+
+      '</div>');
+    }
+
+    function handle_student_response(e){
+      e.preventDefault();
+
+      var student = e.data.student;
+      var response_type = e.data.response_type;
+      var note = courses_student[student.id].note;
+
+      if(response_type == "note"){
+        $.blockUI({message:  generate_note_prompt(student.id,note),css: {width: '275px'}});
+        $("#submit_"+student.id).off("click",{student_id: student.id, note: note }, note_submit_handler);
+        $("#cancel_"+student.id).off("click",cancel_handler);
+        $("#submit_"+student.id).on("click",{student_id: student.id, note: note }, note_submit_handler);
+        $("#cancel_"+student.id).on("click",cancel_handler);
+      }else{
+
+        var student_list = <%= raw student_array.to_json %>;
+        var local_storage_key = new Date().getTime();
+        var date = new Date().toDateString();
+        var course_id = <%= @course.id %>;
+        var value = {action: response_type, student: {id: student.id, name: student.name}, id: course_id, date: date};
+
+        localStorage.setItem(
+                local_storage_key,
+                JSON.stringify(value)
+            );
+        if(response_type == "answer")
+          courses_student[student.id].answered++;
+        else if(response_type == "absent")
+          absent_students.push(student.id);
+
+        set_to_grey(student.id);
+
+        $.ajax({
+            type: "POST",
+            url: "/courses/"+course_id+"/"+response_type+".json",
+            data: {student: student, key:local_storage_key, date: date},
+            success: function(data){
+              localStorage.removeItem(parseInt(data["key"]));
+              update_oTable(data, response_type);
+              connection_error_info(1); //See if previous connection failed, let user know it's reestablished
+            },
+            dataType: "json",
+            async: "false",
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+              if (!connection_loss_pinging) startConnectionLostTimer();
+              connection_error_info(0);
+            }
         });
+      }
+    }
 
-        function show_n_students(n){
-			var student_list = <%= raw student_array.to_json %>;
-		    var min_answered = 99;
-		    var max_answered = 0;
-		    var listed_students = [];
+    function note_submit_handler(e){
+      var student_id = e.data.student_id;
 
-		    if(n > student_list.length){
-		    	n = student_list.length
-		    }
-            
-		      student_list.forEach(function(s){//find min_answered and max_answered
-		        if (courses_student[s.id].answered < min_answered)
-		          min_answered = courses_student[s.id].answered;
+      $.ajax({
+          type: "POST",
+          url: "/courses_students/"+courses_student[student_id].id+"/update_note.json",
+          data: {note: $("#note_left").val()},
+          success: function(data){
+            $("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
+            $("#selected_student_note_"+student_id).text(" Note: " + data["note"]);
+            courses_student[student_id].note = data["note"];
+            $("#selected_student_note_"+student_id).text("Note: " + courses_student[student_id].note);
+            $("#selected_student_note_"+student_id).css('visibility','visible');
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown){
+            if (!connection_loss_pinging) startConnectionLostTimer();
+            connection_error_info(0);
+          },
+          dataType: "json"
+      });
+      $.unblockUI();
+    }
 
-		        if (courses_student[s.id].answered > max_answered)
-		          max_answered = courses_student[s.id].answered;
-		      });
+    function cancel_handler(e){
+      $.unblockUI();
+      return false;
+    }
 
-		      if (max_answered == min_answered){//if all have same number answered, choose randomly
-		      	select_students(student_list,listed_students,n);
-
-		      } else {
-		        var eligible_students = student_list.filter(function(s){
-		          return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered < max_answered && absent_students.indexOf(s.id) == -1;
-		        });
-		        select_students(eligible_students,listed_students,n);
-		        if(listed_students.length != n){
-		        	$("#students_box").append(
-		        		'<div id="next_round_message">Students shown below this line have answered more questions than those above it</div>');
-		        	var next_students = student_list.filter(function(s){
-		          	return listed_students.indexOf(s.id) == -1 && courses_student[s.id].answered == max_answered && absent_students.indexOf(s.id) == -1;
-		        	});
-		        	select_students(next_students,listed_students,n);
-		        }
-		      };//else  
-		};
-
-		function show_student_info(student){
-			 //Display randomly selected student
-      		$("#selected_student_name_"+student.id).text(student.name+" ("+student.SID+")");
-			$("#selected_student_note_"+student.id).text(""); //Make sure it starts blank
-
-			//Trim all space characters and see if there's anything in the note, don't display if just spaces
-			var noteText;
-			if(courses_student[student.id].note != null) //Without this conditional shenanigans happen all over
-				noteText = courses_student[student.id].note.replace(/^\s+/, '').replace(/\s+$/, '');
-			if(courses_student[student.id].note != null && noteText != '' )
-			{
-				$("#selected_student_note_"+student.id).text("Note: " + courses_student[student.id].note);
-				$("#selected_student_note_"+student.id).css('visibility','visible');
-			}
-			else {$("#selected_student_note_"+student.id).css('visibility', 'hidden');} //No note? Don't just say Note for no reason
-
-		}
-
-		function select_students(eligible_students, listed_students,n){
-			var j, k = listed_students.length + eligible_students.length;
-			var bucket = [];//bucket is used as a list of valid indicices in eligible_students to be added to listed_students
-			for(var i = 0; i < eligible_students.length;i++){
-	        	bucket.push(i);
-		    };
-		    for(var i = listed_students.length;i < n && i < k;i++){
-		        j = Math.floor(Math.random()*bucket.length);		        		
-		        listed_students[i] = eligible_students[bucket[j]];
-		        display_student(listed_students[i]);//changed
-		        bucket.splice(j,1);
-		      }  
-		}
-
-		//displays randomly selected student
-		function display_student(student){
-
-			$("#students_box").append(	
-				  '<div id="student_input_'+student.id+'" class="student_input">'+
-					'<div id="selected_student_name_'+student.id+'" class="selected_student_name_class"></div><br>'+
-					'<div id="selected_student_note_'+student.id+'" class="selected_student_note_class"></div>'+
-					'<div id="buttons_'+student.id+'" class="buttons">'+
-						'<div class="button_group">' +
-							'<button type="button" id="answer_'+student.id+'" class="my_btn disable_btn answer btn pure-button pure-button-active selector_button" style="background: rgb(28, 184, 65)">Answered</button>'+
-							'<button type="button" id="pass_'+student.id+'" class="my_btn disable_btn  pass btn pure-button pure-button-active selector_button" style="background: rgb(202, 60, 60)">Passed</button>'+
-						'</div>' +
-						'<div class="button_group">' +	
-							'<button type="button" id="absent_'+student.id+'" class="my_btn disable_btn absent btn pure-button pure-button-active selector_button" style="background: steelblue">Absent</button>'+
-							'<button type="button" id="note_'+student.id+'" class="my_btn disable_btn note btn pure-button pure-button-active selector_button" style="background: rgb(0, 100, 50)">Note</button>'+
-						'</div>' +	
-					'</div>'+
-				  '</div>');	
-			toggle_on_off(student);
-			show_student_info(student);
-		}
-
-		function toggle_on_off(student){
-			var answer = "#answer_" + student.id.toString();
-			var absent = "#absent_" + student.id.toString();
-			var pass = "#pass_" + student.id.toString();
-			var note = "#note_" + student.id.toString();
-
-			$(answer).off("click", {response_type: "answer", student: student}, handle_student_response);
-			$(absent).off("click", {response_type: "absent", student: student}, handle_student_response);
-			$(pass).off("click", {response_type: "pass", student: student}, handle_student_response);
-			$(note).off("click", {response_type: "note", student: student}, handle_student_response);	
-
-			$(answer).on("click", {response_type: "answer", student: student}, handle_student_response);
-			$(absent).on("click", {response_type: "absent", student: student}, handle_student_response);
-			$(pass).on("click", {response_type: "pass", student: student}, handle_student_response);
-			$(note).on("click", {response_type: "note", student: student}, handle_student_response);			
-
-		}
-
-		function generate_note_prompt(student_id,note){
-			return ('<div id="note_prompt" style="cursor: default">'+
-				'<h2>Please enter a student note</h2>'+
-				'<input type="text" id="note_left" val="'+note+'"/><br>'+
-				'<input type="button" id="submit_'+student_id+'" value="Submit" />'+
-				'<input type="button" id="cancel_'+student_id+'" value="Cancel" />'+
-			'</div>');
-		}
-
-		function handle_student_response(e){		
-			e.preventDefault();
-
-			var student = e.data.student;
-			var response_type = e.data.response_type;
-			var note = courses_student[student.id].note;
-
-			if(response_type == "note"){
-				$.blockUI({message:  generate_note_prompt(student.id,note),css: {width: '275px'}});
-				$("#submit_"+student.id).off("click",{student_id: student.id, note: note }, note_submit_handler);
-				$("#cancel_"+student.id).off("click",cancel_handler);
-				$("#submit_"+student.id).on("click",{student_id: student.id, note: note }, note_submit_handler);
-				$("#cancel_"+student.id).on("click",cancel_handler);
-			}else{	
-
-				var student_list = <%= raw student_array.to_json %>;
-	      		var local_storage_key = new Date().getTime();
-	      		var date = new Date().toDateString();
-				var course_id = <%= @course.id %>;
-				var value = {action: response_type, student: {id: student.id, name: student.name}, id: course_id, date: date};
-
-				localStorage.setItem(
-	          		local_storage_key,
-	          		JSON.stringify(value)
-	        	);
-				if(response_type == "answer")
-					courses_student[student.id].answered++;
-				else if(response_type == "absent")
-					absent_students.push(student.id);
-
-				set_to_grey(student.id);
-
-				$.ajax({
-		  			type: "POST",
-		  			url: "/courses/"+course_id+"/"+response_type+".json",
-		  			data: {student: student, key:local_storage_key, date: date},
-		  			success: function(data){
-		  				localStorage.removeItem(parseInt(data["key"]));
-		  				update_oTable(data, response_type);
-		  				connection_error_info(1); //See if previous connection failed, let user know it's reestablished
-		  			},
-		  			dataType: "json",
-		  			async: "false",
-		  			error: function(XMLHttpRequest, textStatus, errorThrown)
-	        		{
-	        			connection_error_info(0);
-	        		}
-				});
-			}	
-		}
-
-		function note_submit_handler(e){
-			var student_id = e.data.student_id;
-			
-			$.ajax({
-	  			type: "POST",
-	  			url: "/courses_students/"+courses_student[student_id].id+"/update_note.json",
-	  			data: {note: $("#note_left").val()},
-	  			success: function(data){
-	  				$("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
-					$("#selected_student_note_"+student_id).text(" Note: " + data["note"]);
-					courses_student[student_id].note = data["note"];
-					$("#selected_student_note_"+student_id).text("Note: " + courses_student[student_id].note);
-					$("#selected_student_note_"+student_id).css('visibility','visible');
-	  			},
-	  			dataType: "json"
-			});
-			$.unblockUI();
-		}
-
-		function cancel_handler(e){
-			$.unblockUI();
-			return false;
-		}
-
-		function set_to_grey(student_id){
-	        $('#answer_'+student_id).prop('disabled', true);
-	        $('#absent_'+student_id).prop('disabled', true);	     
-	        $('#pass_'+student_id).prop('disabled', true);
-	        $('#student_input_'+student_id).css('background','#555');
-	        $('#student_input_'+student_id).css('opacity', 0.75);        
-		}
+    function set_to_grey(student_id){
+          $('#answer_'+student_id).prop('disabled', true);
+          $('#absent_'+student_id).prop('disabled', true);
+          $('#pass_'+student_id).prop('disabled', true);
+          $('#student_input_'+student_id).css('background','#555');
+          $('#student_input_'+student_id).css('opacity', 0.75);
+    }
 
 
-		//Gets called whenever a submission of some sort occurs to check connection status, displays connections and syncs appropriately
-		function connection_error_info(call_type)
-		{
-			if(call_type == 0) //Error call type, lost connection
-			{
-				if(!connection_loss_note)
-				{	
-	    			//alert('The connection appears to be lost. Do not refresh the page, the application will work and update when the connection is reestablished');
-	    			connection_loss_note = true;
-	    		}
-		    	$("#flash").html("<strong><p class=\"flash-error\">Connection still not found</p></strong>");
-			}
-			else //Established connection, if was error on last call flash connection found
-			{
-				if(connection_loss_note)
-	  				{
-	  					connection_loss_note = false;
-	  					$("#flash").html("<strong><p class=\"flash-notice\">Connection established, records updated</p></strong>");	
-	  					sync();
-	  				}
-	  			else
-	  				$("#flash").html("");
+    //Gets called whenever a submission of some sort occurs to check connection status, displays connections and syncs appropriately
+    function connection_error_info(call_type){
+      //Error call type, lost connection
+      if(call_type == 0) {
+        if(!connection_loss_note){
+            //alert('The connection appears to be lost. Do not refresh the page, the application will work and update when the connection is reestablished');
+            connection_loss_note = true;
+          }
+          $("#flash").html("<strong><p class=\"flash-error\">Connection lost.</p></strong>");
+      } else {
+        //Established connection, if was error on last call flash connection found
+        if(connection_loss_note){
+          connection_loss_note = false;
+          $("#flash").html("<strong><p class=\"flash-notice\">Connection established, records updated.</p></strong>");
+          sync();
+          setTimeout(function(){
+            $(".flash-notice").hide();
+          }, 3000)
+        } else{
+          $("#flash").html("");
+        }
 
-			}
-		}
+      }
+    }
 
 })
-	
+
 </script>

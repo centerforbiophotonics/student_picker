@@ -1,42 +1,43 @@
+
 <%= form_for(@course, :html=> {:multipart=>true, :'data-ajax'=>false} ) do |f| %>
   <% if @course.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@course.errors.count, "error") %> prohibited this course from being saved:</h2>
       <ul>
-      <% @course.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
+        <% @course.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
-  <div class="box_title">
-    <div class="box_content" style="color:black">
-      <div class="field">
-        <%= f.label :name %>
-        <%= f.text_field :name %>
-      </div>
 
 
-      <%= f.hidden_field :user_id, :value => current_user.id %>
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </div>
 
 
-      <div class="field">
-        <%= f.label :student_list, "Upload Student Roster" %>
-        <%= f.file_field :student_list %>
+  <%= f.hidden_field :user_id, :value => current_user.id %>
 
-        <p id="warning_text">
-            Files must be in <strong>.csv</strong> format, no other excel files
-            <br>A roster <strong>must</strong> be uploaded currently, make sure to select a file<br>
-            Roster upload may take <strong>~1-2 minutes</strong>, the page is not frozen
-        </p>
-      </div>
 
-      <div class="actions" id="course_submit">
-        <%= f.submit :id => "course_submit_button" %>
-      </div>
-    </div>
+  <div class="field">
+    <%= f.label :student_list, "Upload Student Roster" %>
+    <%= f.file_field :student_list %>
+
+    <p id="warning_text">
+      Files must be in <strong>.csv</strong> format, no other excel files
+      <br>A roster <strong>must</strong> be uploaded currently, make sure to select a file<br>
+      Roster upload may take <strong>~1-2 minutes</strong>, the page is not frozen
+    </p>
+  </div>
+
+  <div class="actions" id="course_submit">
+      <%= f.submit :id => "course_submit_button" %>
   </div>
 <% end %>
+
+
 
 <script type="text/javascript">
   $(document).ready(function() {

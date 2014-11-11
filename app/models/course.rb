@@ -10,11 +10,16 @@ class Course < ActiveRecord::Base
   		csv << ["Name", "SID", "Answered", "Answer Dates", "Absent", "Absent Dates", "Passed", "Passed Dates"]
   		students.each do |student|
         cs = student.courses_student.where(:courses_id => id).first
-  			csv << [student.name,
+  			csv << [
+          student.name,
   			  student.sid,
-  			  cs.answered,cs.answered_dates,
-  		      cs.absent,cs.absent_dates,
-  		      cs.passed,cs.passed_dates]
+  			  cs.answered,
+          cs.answered_dates.join(','),
+  		    cs.absent,
+          cs.absent_dates.join(','),
+  		    cs.passed,
+          cs.passed_dates.join(',')
+        ]
 
   		end
   	end

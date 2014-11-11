@@ -7,6 +7,8 @@
 
 #toggle_student_list {
   font-size: large;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 #next_round_message{
@@ -64,7 +66,8 @@
   border-style:solid;
   border-color:#333;
   margin: 5px;
-  padding-bottom: 10px;  
+  margin-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .selected_student_name_class{
@@ -102,6 +105,33 @@
   background-color:#333;
   color:red
 }
+
+.delete_course_link {
+  color:red !important;
+  float:right;
+
+}
+
+#course_actions_container{
+  margin-top: 20px;
+}
+
+.course_action{
+  display:inline;
+  margin-left:4%;
+  margin-right:4%;
+}
+
+#student_info_filter{
+  margin-bottom: 40px;
+}
+
+.course_form_container {
+  margin-bottom: 30px;
+  margin-top: 20px;
+
+}
+
 //Taken from pure
 //http://yui.yahooapis.com/pure/0.5.0/pure-min.css
 

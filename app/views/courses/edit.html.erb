@@ -4,4 +4,14 @@
 
 <%= render 'form' %>
 
-<a href="javascript:history.back()">Discard Changes and Go Back</a>
+<div id="course_actions_container">
+    <a href="javascript:history.back()">Discard Changes and Go Back</a>
+
+    <%= link_to 'Delete Course',
+                @course,
+                :method => :delete,
+                :data => { :confirm => 'Are you sure?'},
+                :"data-ajax" => false,
+                :class => "delete_course_link"
+    %>
+</div>

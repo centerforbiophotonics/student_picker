@@ -123,7 +123,12 @@ class CoursesController < ApplicationController
   	course.save!
     respond_to do |format|
   	    format.json do
-          render :json => {id: params[:student][:id], value: courses_students.answered, key: params[:key] }
+          render :json => {
+              :id => params[:student][:id],
+              :value => courses_students.answered,
+              :date => courses_students.answered_dates.last,
+              :key => params[:key]
+          }
         end
      end
   end
@@ -141,7 +146,12 @@ class CoursesController < ApplicationController
     course.save!
     respond_to do |format|
         format.json do
-          render :json => {id: params[:student][:id], value: courses_students.absent, key: params[:key]  }
+          render :json => {
+              :id => params[:student][:id],
+              :value => courses_students.absent,
+              :date => courses_students.absent_dates.last,
+              :key => params[:key]
+          }
         end
      end    
   end
@@ -159,7 +169,12 @@ class CoursesController < ApplicationController
     course.save!
     respond_to do |format|
         format.json do
-         render :json => {id: params[:student][:id], value: courses_students.passed, key: params[:key] } 
+          render :json => {
+              :id => params[:student][:id],
+              :value => courses_students.passed,
+              :date => courses_students.passed_dates.last,
+              :key => params[:key]
+          }
        end
      end
   end
