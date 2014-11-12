@@ -11,9 +11,14 @@ class CoursesController < ApplicationController
     if(params[:course][:student_list].present?)
       CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
         unless row["Name"].blank?
-           student = Student.new
+           student = Student.where(:sid => row["User ID"].to_i).first
+
+           if(!student.present?)
+             student = Student.new
+           end
+
            student.name = row["Name"]
-           student.sid = row["User ID"]
+           student.sid = row["User ID"].to_i
            student.save!
            courses_student = CoursesStudent.new(:courses_id=>@course.id, :students_id=>student.id)
            courses_student.save!
@@ -71,14 +76,14 @@ class CoursesController < ApplicationController
       CSV.foreach(params[:course][:student_list].path, {:headers => true}) do |row|
         unless row["Name"].blank?
          sid_array << row["User ID"].to_i
-         student = Student.where(:sid => row["User ID"]).first
+         student = Student.where(:sid => row["User ID"].to_i).first
 
           if(!student.present?)
            student = Student.new
           end
 
           student.name = row["Name"]
-          student.sid = row["User ID"] 
+          student.sid = row["User ID"].to_i 
           student.save!
 
           unless CoursesStudent.
