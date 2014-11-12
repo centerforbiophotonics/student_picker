@@ -69,8 +69,8 @@
   </div>
 </div>
 <br style="clear:both">
-<%= link_to 'Go Back', user_path(@course.user_id), {:class => 'course_link'} %>
-<%= link_to 'Edit Roster', edit_course_path, {:class => 'course_link', :style => "float:right"} %>
+<%= link_to 'Go Back', user_path(@course.user_id), {:class => 'course_link', :style => "margin-bottom:30px"} %>
+<%= link_to 'Edit Roster', edit_course_path, {:class => 'course_link', :style => "float:right;margin-bottom:30px"} %>
 
 
 <!-- A whole series of button/data shenanigans, updates as needed and such -->
@@ -146,7 +146,7 @@
         "scrollCollapse": true
       });
     }
-    initTable();
+   setTimeout(initTable, 500);
 
     $.ajaxSetup({
         headers: {
