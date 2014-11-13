@@ -221,7 +221,7 @@
 
     function show_student_info(student){
        //Display randomly selected student
-          $("#selected_student_name_"+student.id).text(student.name+" ("+student.SID+")");
+      $("#selected_student_name_"+student.id).text(student.name+" ("+student.SID+")");
       $("#selected_student_note_"+student.id).text(""); //Make sure it starts blank
 
       //Trim all space characters and see if there's anything in the note, don't display if just spaces
@@ -292,10 +292,10 @@
     }
 
     function generate_note_prompt(student_id,note){
-      return ('<div id="note_prompt" style="cursor: default">'+
-        '<h2>Please enter a student note</h2>'+
-        '<input type="text" id="note_left" val="'+note+'"/><br>'+
-        '<input type="button" id="submit_'+student_id+'" value="Submit" />'+
+      $("#selected_student_note_"+student_id).after('<div id="note_prompt_'+student_id+'" style="cursor: default" class="note_prompt">'+
+        'Please enter a student note: '+
+        '<input type="text" id="note_left_'+student_id+'" val="'+note+'"/>'+
+        '<input type="button" id="submit_'+student_id+'" style="margin-left:0.5%;margin-right:0.5%" value="Submit" />'+
         '<input type="button" id="cancel_'+student_id+'" value="Cancel" />'+
       '</div>');
     }
@@ -308,11 +308,12 @@
       var note = courses_student[student.id].note;
 
       if(response_type == "note"){
-        $.blockUI({message:  generate_note_prompt(student.id,note),css: {width: '275px'}});
+        generate_note_prompt(student.id,note);
+        $("#note_left_"+student.id).focus();
         $("#submit_"+student.id).off("click",{student_id: student.id, note: note }, note_submit_handler);
-        $("#cancel_"+student.id).off("click",cancel_handler);
+        $("#cancel_"+student.id).off("click",function(e){$("#note_prompt_"+student.id).remove()});
         $("#submit_"+student.id).on("click",{student_id: student.id, note: note }, note_submit_handler);
-        $("#cancel_"+student.id).on("click",cancel_handler);
+        $("#cancel_"+student.id).on("click",function(e){$("#note_prompt_"+student.id).remove()});
       }else{
 
         var student_list = <%= raw student_array.to_json %>;
@@ -357,13 +358,14 @@
       $.ajax({
           type: "POST",
           url: "/courses_students/"+courses_student[student_id].id+"/update_note.json",
-          data: {note: $("#note_left").val()},
+          data: {note: $("#note_left_"+student_id).val()},
           success: function(data){
             $("#flash").html("<strong><p class=\"flash-notice\">"+data["status"]+"</p></strong>");
             $("#selected_student_note_"+student_id).text(" Note: " + data["note"]);
             courses_student[student_id].note = data["note"];
             $("#selected_student_note_"+student_id).text("Note: " + courses_student[student_id].note);
             $("#selected_student_note_"+student_id).css('visibility','visible');
+            $("#note_prompt_"+student_id).remove();
           },
           error: function(XMLHttpRequest, textStatus, errorThrown){
             if (!connection_loss_pinging) startConnectionLostTimer();
@@ -371,12 +373,6 @@
           },
           dataType: "json"
       });
-      $.unblockUI();
-    }
-
-    function cancel_handler(e){
-      $.unblockUI();
-      return false;
     }
 
     function set_to_grey(student_id){
