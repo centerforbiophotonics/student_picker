@@ -294,7 +294,7 @@
     function generate_note_prompt(student_id,note){
       $("#selected_student_note_"+student_id).after('<div id="note_prompt_'+student_id+'" style="cursor: default" class="note_prompt">'+
         'Please enter a student note: '+
-        '<input type="text" id="note_left_'+student_id+'" val="'+note+'"/>'+
+        '<input type="text" id="note_left_'+student_id+'" value="'+note+'"/>'+
         '<input type="button" id="submit_'+student_id+'" style="margin-left:0.5%;margin-right:0.5%" value="Submit" />'+
         '<input type="button" id="cancel_'+student_id+'" value="Cancel" />'+
       '</div>');
